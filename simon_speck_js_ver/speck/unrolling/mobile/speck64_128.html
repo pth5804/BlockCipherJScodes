@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script language="javascript" type="text/javascript">
+    <!--
+
+//speck64/128
+var m = 4;
+var n = 32;
+var T = 27;
+var alpha = 8;
+var beta = 3;
+
+
+var ROR_alpha = function(x){
+	return (x>>>alpha)|((x<<(n-alpha)>>>0));//%0x10000;
+}
+
+var ROR_beta = function(x){
+	return (x>>beta)|(x<<(n-beta));//%0x10000;
+}
+
+var ROL_alpha = function(x){
+	return (x<<alpha)|(x>>(n-alpha));//%0x10000;
+}
+
+var ROL_beta = function(x){
+	return ((x<<beta)>>>0)|(x>>>(n-beta));//%0x10000;
+}
+
+
+/* ===================================*/
+var ROR_alpha_1 = function(x){
+	return (x>>>alpha)|((x<<(n-alpha)>>>0));
+}
+
+var ROR_beta_1 = function(x){
+	return (x>>>beta)|((x<<(n-beta))>>>0);
+}
+
+var ROL_alpha_1 = function(x){
+	return (x<<alpha)|(x>>>(n-alpha));
+}
+
+var ROL_beta_1 = function(x){
+	return ((x<<beta)>>>0)|(x>>>(n-beta));
+}
+
+var keyexpansion32 = function(k, l)
+{
+	var i = 0;
+	l[3] = ((k[0] + ROR_alpha(l[0])))^0;
+	l[3] = l[3]>>>0;
+	k[1] = (ROL_beta(k[0])^l[3]);
+	k[1] = k[1]>>>0;
+	l[4] = ((k[1] + ROR_alpha(l[1])))^1;
+	l[4] = l[4]>>>0;
+	k[2] = (ROL_beta(k[1])^l[4]);
+	k[2] = k[2]>>>0;
+	l[5] = ((k[2] + ROR_alpha(l[2])))^2;
+	l[5] = l[5]>>>0;
+	k[3] = (ROL_beta(k[2])^l[5]);
+	k[3] = k[3]>>>0;
+	l[6] = ((k[3] + ROR_alpha(l[3])))^3;
+	l[6] = l[6]>>>0;
+	k[4] = (ROL_beta(k[3])^l[6]);
+	k[4] = k[4]>>>0;
+	l[7] = ((k[4] + ROR_alpha(l[4])))^4;
+	l[7] = l[7]>>>0;
+	k[5] = (ROL_beta(k[4])^l[7]);
+	k[5] = k[5]>>>0;
+	l[8] = ((k[5] + ROR_alpha(l[5])))^5;
+	l[8] = l[8]>>>0;
+	k[6] = (ROL_beta(k[5])^l[8]);
+	k[6] = k[6]>>>0;
+	l[9] = ((k[6] + ROR_alpha(l[6])))^6;
+	l[9] = l[9]>>>0;
+	k[7] = (ROL_beta(k[6])^l[9]);
+	k[7] = k[7]>>>0;
+	l[10] = ((k[7] + ROR_alpha(l[7])))^7;
+	l[10] = l[10]>>>0;
+	k[8] = (ROL_beta(k[7])^l[10]);
+	k[8] = k[8]>>>0;
+	l[11] = ((k[8] + ROR_alpha(l[8])))^8;
+	l[11] = l[11]>>>0;
+	k[9] = (ROL_beta(k[8])^l[11]);
+	k[9] = k[9]>>>0;
+	l[12] = ((k[9] + ROR_alpha(l[9])))^9;
+	l[12] = l[12]>>>0;
+	k[10] = (ROL_beta(k[9])^l[12]);
+	k[10] = k[10]>>>0;
+	l[13] = ((k[10] + ROR_alpha(l[10])))^10;
+	l[13] = l[13]>>>0;
+	k[11] = (ROL_beta(k[10])^l[13]);
+	k[11] = k[11]>>>0;
+	l[14] = ((k[11] + ROR_alpha(l[11])))^11;
+	l[14] = l[14]>>>0;
+	k[12] = (ROL_beta(k[11])^l[14]);
+	k[12] = k[12]>>>0;
+	l[15] = ((k[12] + ROR_alpha(l[12])))^12;
+	l[15] = l[15]>>>0;
+	k[13] = (ROL_beta(k[12])^l[15]);
+	k[13] = k[13]>>>0;
+	l[16] = ((k[13] + ROR_alpha(l[13])))^13;
+	l[16] = l[16]>>>0;
+	k[14] = (ROL_beta(k[13])^l[16]);
+	k[14] = k[14]>>>0;
+	l[17] = ((k[14] + ROR_alpha(l[14])))^14;
+	l[17] = l[17]>>>0;
+	k[15] = (ROL_beta(k[14])^l[17]);
+	k[15] = k[15]>>>0;
+	l[18] = ((k[15] + ROR_alpha(l[15])))^15;
+	l[18] = l[18]>>>0;
+	k[16] = (ROL_beta(k[15])^l[18]);
+	k[16] = k[16]>>>0;
+	l[19] = ((k[16] + ROR_alpha(l[16])))^16;
+	l[19] = l[19]>>>0;
+	k[17] = (ROL_beta(k[16])^l[19]);
+	k[17] = k[17]>>>0;
+	l[20] = ((k[17] + ROR_alpha(l[17])))^17;
+	l[20] = l[20]>>>0;
+	k[18] = (ROL_beta(k[17])^l[20]);
+	k[18] = k[18]>>>0;
+	l[21] = ((k[18] + ROR_alpha(l[18])))^18;
+	l[21] = l[21]>>>0;
+	k[19] = (ROL_beta(k[18])^l[21]);
+	k[19] = k[19]>>>0;
+	l[22] = ((k[19] + ROR_alpha(l[19])))^19;
+	l[22] = l[22]>>>0;
+	k[20] = (ROL_beta(k[19])^l[22]);
+	k[20] = k[20]>>>0;
+	l[23] = ((k[20] + ROR_alpha(l[20])))^20;
+	l[23] = l[23]>>>0;
+	k[21] = (ROL_beta(k[20])^l[23]);
+	k[21] = k[21]>>>0;
+	l[24] = ((k[21] + ROR_alpha(l[21])))^21;
+	l[24] = l[24]>>>0;
+	k[22] = (ROL_beta(k[21])^l[24]);
+	k[22] = k[22]>>>0;
+	l[25] = ((k[22] + ROR_alpha(l[22])))^22;
+	l[25] = l[25]>>>0;
+	k[23] = (ROL_beta(k[22])^l[25]);
+	k[23] = k[23]>>>0;
+	l[26] = ((k[23] + ROR_alpha(l[23])))^23;
+	l[26] = l[26]>>>0;
+	k[24] = (ROL_beta(k[23])^l[26]);
+	k[24] = k[24]>>>0;
+	l[27] = ((k[24] + ROR_alpha(l[24])))^24;
+	l[27] = l[27]>>>0;
+	k[25] = (ROL_beta(k[24])^l[27]);
+	k[25] = k[25]>>>0;
+	l[28] = ((k[25] + ROR_alpha(l[25])))^25;
+	l[28] = l[28]>>>0;
+	k[26] = (ROL_beta(k[25])^l[28]);
+	k[26] = k[26]>>>0;
+	l[29] = ((k[26] + ROR_alpha(l[26])))^26;
+	l[29] = l[29]>>>0;
+	k[27] = (ROL_beta(k[26])^l[29]);
+	k[27] = k[27]>>>0;
+
+}
+
+var encrypt32 = function(plaintext, k, ciphertext){
+	var x = plaintext[1];
+	var y = plaintext[0];
+	var i = 0;
+
+	x = (((ROR_alpha(x) + y))^k[0]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[1]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[2]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[3]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[4]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[5]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[6]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[7]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[8]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[9]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[10]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[11]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[12]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[13]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[14]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[15]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[16]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[17]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[18]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[19]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[20]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[21]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[22]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[23]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[24]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[25]);
+	//x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	//y = y>>>0;
+
+	x = (((ROR_alpha(x) + y))^k[26]);
+	x = x>>>0;
+	y = ( ROL_beta(y)^x);
+	y = y>>>0;
+
+
+	ciphertext[0] = y;
+	ciphertext[1] = x;
+}
+
+
+var decrypt32 = function(ciphertext, k, plaintext){
+	var x = ciphertext[1];
+	var y = ciphertext[0];
+	var temp = 0x0;
+	var i =0;
+	
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[26]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[25]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[24]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[23]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[22]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[21]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[20]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[19]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[18]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[17]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[16]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[15]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[14]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[13]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[12]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[11]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[10]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[9]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[8]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[7]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[6]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[5]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[4]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[3]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[2]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	//y = y>>>0;
+	temp1 = ((x^k[1]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	//x = x>>>0;
+
+	temp = x^y;
+	temp = temp>>>0;
+	y = ROR_beta_1(temp);
+	y = y>>>0;
+	temp1 = ((x^k[0]) - y);
+	temp1 = temp1>>>0;
+	x = ROL_alpha_1(temp1);//Decryption result
+	x = x>>>0;
+
+
+	plaintext[0] = y;
+	plaintext[1] = x;
+	
+	//console.log("plaintext[0]: 0x"+plaintext[0].toString(16));
+	//console.log("plaintext[0]: "+plaintext[0]);
+	//console.log("plaintext[1]: 0x"+plaintext[1].toString(16));
+	//console.log("plaintext[1]: "+plaintext[1]);
+/*
+	document.write('plaintext[0] : 0x', plaintext[0].toString(16)+'<br />');
+	document.write('plaintext[0] : ', plaintext[0]+'<br />');
+	document.write('plaintext[1] : 0x', plaintext[1].toString(16)+'<br />');
+	document.write('plaintext[1] : ', plaintext[1]+'<br />');
+*/
+}
+
+
+var speck64 = function()
+{	
+	var key = new Array(31);
+	var l = new Array(31);
+	var plaintext =[0x7475432d, 0x3b726574];
+	var plaintext2 = [0x0, 0x0];
+	var ciphertext = [0x454e028b, 0x8c6fa548];
+	var ciphertext2 = [0x0, 0x0];
+	var i = 0;
+
+	for(i=0; i<31; i++){
+		key[i] = 0x0;
+		l[i] = 0x0;
+	}
+	key[0] = 0x03020100;
+	l[0] = 0x0b0a0908;
+	l[1] = 0x13121110;
+	l[2] = 0x1b1a1918;
+	
+	keyexpansion32(key, l);
+	
+	encrypt32(plaintext, key, ciphertext2);
+	
+
+
+	document.write('ciphertext[0] : 0x', ciphertext2[0].toString(16)+'<br />');
+	document.write('ciphertext[0] : ', ciphertext2[0]+'<br />');
+	document.write('ciphertext[1] : 0x', ciphertext2[1].toString(16)+'<br />');
+	document.write('ciphertext[1] : ', ciphertext2[1]+'<br />');
+
+	decrypt32(ciphertext2, key, plaintext2);
+
+	document.write('plaintext2[0] : 0x', plaintext2[0].toString(16)+'<br />');
+	document.write('plaintext2[0] : ', plaintext2[0]+'<br />');
+	document.write('plaintext2[1] : 0x', plaintext2[1].toString(16)+'<br />');
+	document.write('plaintext2[1] : ', plaintext2[1]+'<br />');
+
+
+
+	 //Time Calculation		
+		document.write('Speck 64/128' + '<br />');
+		var Hz2 = 2.30*1073741824; //3.40*1073741824;
+		var Bytes = 8;
+		var Bytes2 = 16;
+
+		var size_test=10000;
+		var cnt_time;
+		var key_cpb = 0.0;
+		var enc_cpb = 0.0;
+		var dec_cpb = 0.0;
+		var idx = 0;
+
+		while(idx<10){
+			var d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					keyexpansion32(key, l);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			var ms = (n2-n)/size_test;
+			var s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes2;
+			if(cpb>0){
+				key_cpb += cpb;
+				idx++;
+			}
+		}
+		idx = 0;
+		key_cpb /= 10;
+		console.log("keyexpansion time: "+ms+"ms");
+		console.log("keyexpansion time: "+s+"s");
+		console.log("cpb: "+ key_cpb);
+
+		document.write('keyexpansion time: ',ms+'ms'+ '<br />');
+		document.write('keyexpansion time: ',s+'s'+ '<br />');
+		document.write('cpb: ',key_cpb+ '<br />');
+
+		while(idx<10){
+			d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					encrypt32(plaintext, key, ciphertext2);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			ms = (n2-n)/size_test;
+			s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes;
+			if(cpb>0){
+				enc_cpb += cpb;
+				idx++;
+			}
+		}
+		enc_cpb /= 10;
+		idx = 0;
+		console.log("encryption time: "+ms+"ms");
+		console.log("encryption time: "+s+"s");
+		console.log("cpb: "+ enc_cpb);
+
+		document.write('encryption time: ',ms+'ms'+ '<br />');
+		document.write('encryption time: ',s+'s'+ '<br />');
+		document.write('cpb: ',enc_cpb+ '<br />');
+
+		
+		while(idx<10){
+			d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					decrypt32(ciphertext2, key, plaintext2);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			ms = (n2-n)/size_test;
+			s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes;
+			if(cpb>0){
+				dec_cpb += cpb;
+				idx++;
+			}
+		}
+		dec_cpb /= 10;
+		idx = 0;
+		console.log("decryption time: "+(n2-n)/size_test+"ms");
+		console.log("decryption time: "+s+"s");
+		console.log("cpb: "+ dec_cpb);
+       
+	   document.write('decryption time: ',ms+'ms'+ '<br />');
+	   document.write('decryption time: ',s+'s'+ '<br />');
+	   document.write('cpb: ',dec_cpb+ '<br />');
+}
+
+    //-->
+</script>
+<p>Click the following to see the result:</p> <form> <input type="button" value="Click Me" onclick="speck64();" /> </form>
+</body>
+</html>

@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script language="javascript" type="text/javascript">
+    <!--
+
+    //simon64/96
+    var n = 32;
+    var m = 3;
+    var T = 42;
+    var j = 2;
+
+
+    var z = [
+        [1,1,1,1,1,0,1,0,0,0,1,0,0,1,0,1,0,1,1,0,0,0,0,1,1,1,0,0,1,1,0,1,1,1,1,1,0,1,0,0,0,1,0,0,1,0,1,0,1,1,0,0,0,0,1,1,1,0,0,1,1,0],
+        [1,0,0,0,1,1,1,0,1,1,1,1,1,0,0,1,0,0,1,1,0,0,0,0,1,0,1,1,0,1,0,1,0,0,0,1,1,1,0,1,1,1,1,1,0,0,1,0,0,1,1,0,0,0,0,1,0,1,1,0,1,0],
+        [1,0,1,0,1,1,1,1,0,1,1,1,0,0,0,0,0,0,1,1,0,1,0,0,1,0,0,1,1,0,0,0,1,0,1,0,0,0,0,1,0,0,0,1,1,1,1,1,1,0,0,1,0,1,1,0,1,1,0,0,1,1],
+        [1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,0,0,1,1,0,0,1,0,1,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,1,0,0,1,1,1,0,0,1,1,0,1,0,0,0,0,1,1,1,1],
+        [1,1,0,1,0,0,0,1,1,1,1,0,0,1,1,0,1,0,1,1,0,1,1,0,0,0,1,0,0,0,0,0,0,1,0,1,1,1,0,0,0,0,1,1,0,0,1,0,1,0,0,1,0,0,1,1,1,0,1,1,1,1]
+    ];
+
+    /*
+     function ROL(input, offset){
+     input = ( (input<<offset)>>>0 ) | (  input>>> (32-offset) ) ;
+     return input
+     }
+
+     function ROR(input, offset){
+     input = ( (input<<32-offset)>>>0 ) | (  input>>>(offset) ) ;
+     return input
+     }
+     */
+    var ROR3 = function(x){
+        return ( (x<<n-3)>>>0 ) | ( x>>>(3) );//((x>>3)<<<0)|(x<<<(n-3));
+    }
+
+    var ROL1 = function(x){
+        return ( (x<<1)>>>0 ) | ( x>>> (n-1) ); //( ((x<<1)>>>0)|(x>>>(n-1));
+    }
+
+    var ROL8 = function(x){
+        return ( (x<<8)>>>0 ) | ( x>>> (n-8) ); //( ((x<<8)>>>0)|(x>>>(n-8));
+    }
+
+    var ROL2 = function(x){
+        return ( (x<<2)>>>0 ) | ( x>>> (n-2) ); //(((x<<2)>>>0)|(x>>>n-2))
+    }
+
+
+    var ROR1 = function(x){
+        return ( (x<<n-1)>>>0 ) | (  x>>>(1) ); //(x>>1)|(x<<(n-1));
+    }
+
+    var ROR2 = function(x){
+        return ( (x<<n-2)>>>0 ) | (  x>>>(2) );
+    }
+
+    var ROR8 = function(x){
+        return ( (x<<n-8)>>>0 ) | (  x>>>(8) );
+    }
+
+
+ 
+
+    var notOperation16 = function(x){
+        return (0xFFFF ^ x);
+    }
+
+    var notOperation32 = function(x){
+        return (0xFFFFFFFF ^ x);
+    }
+
+    var notOperation64 = function(x){
+        return (0xFFFFFFFFFFFFFFFF ^ x);
+    }
+
+    var keyexpansion32 = function(k)
+    {
+        var c = 0xfffffffc;
+        var tmp = 0;
+        var t1 = 0;
+        
+		//Round# 3
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[2]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[0]);
+		k[3] = (t1 ^ tmp) ^ z[2][0] ^ 3;
+
+		//Round# 4
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[3]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[1]);
+		k[4] = (t1 ^ tmp) ^ z[2][1] ^ 3;
+
+		//Round# 5
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[4]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[2]);
+		k[5] = (t1 ^ tmp) ^ z[2][2] ^ 3;
+
+		//Round# 6
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[5]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[3]);
+		k[6] = (t1 ^ tmp) ^ z[2][3] ^ 3;
+
+		//Round# 7
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[6]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[4]);
+		k[7] = (t1 ^ tmp) ^ z[2][4] ^ 3;
+
+		//Round# 8
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[7]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[5]);
+		k[8] = (t1 ^ tmp) ^ z[2][5] ^ 3;
+
+		//Round# 9
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[8]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[6]);
+		k[9] = (t1 ^ tmp) ^ z[2][6] ^ 3;
+
+		//Round# 10
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[9]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[7]);
+		k[10] = (t1 ^ tmp) ^ z[2][7] ^ 3;
+
+		//Round# 11
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[10]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[8]);
+		k[11] = (t1 ^ tmp) ^ z[2][8] ^ 3;
+
+		//Round# 12
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[11]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[9]);
+		k[12] = (t1 ^ tmp) ^ z[2][9] ^ 3;
+
+		//Round# 13
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[12]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[10]);
+		k[13] = (t1 ^ tmp) ^ z[2][10] ^ 3;
+
+		//Round# 14
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[13]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[11]);
+		k[14] = (t1 ^ tmp) ^ z[2][11] ^ 3;
+
+		//Round# 15
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[14]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[12]);
+		k[15] = (t1 ^ tmp) ^ z[2][12] ^ 3;
+
+		//Round# 16
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[15]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[13]);
+		k[16] = (t1 ^ tmp) ^ z[2][13] ^ 3;
+
+		//Round# 17
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[16]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[14]);
+		k[17] = (t1 ^ tmp) ^ z[2][14] ^ 3;
+
+		//Round# 18
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[17]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[15]);
+		k[18] = (t1 ^ tmp) ^ z[2][15] ^ 3;
+
+		//Round# 19
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[18]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[16]);
+		k[19] = (t1 ^ tmp) ^ z[2][16] ^ 3;
+
+		//Round# 20
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[19]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[17]);
+		k[20] = (t1 ^ tmp) ^ z[2][17] ^ 3;
+
+		//Round# 21
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[20]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[18]);
+		k[21] = (t1 ^ tmp) ^ z[2][18] ^ 3;
+
+		//Round# 22
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[21]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[19]);
+		k[22] = (t1 ^ tmp) ^ z[2][19] ^ 3;
+
+		//Round# 23
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[22]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[20]);
+		k[23] = (t1 ^ tmp) ^ z[2][20] ^ 3;
+
+		//Round# 24
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[23]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[21]);
+		k[24] = (t1 ^ tmp) ^ z[2][21] ^ 3;
+
+		//Round# 25
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[24]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[22]);
+		k[25] = (t1 ^ tmp) ^ z[2][22] ^ 3;
+
+		//Round# 26
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[25]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[23]);
+		k[26] = (t1 ^ tmp) ^ z[2][23] ^ 3;
+
+		//Round# 27
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[26]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[24]);
+		k[27] = (t1 ^ tmp) ^ z[2][24] ^ 3;
+
+		//Round# 28
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[27]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[25]);
+		k[28] = (t1 ^ tmp) ^ z[2][25] ^ 3;
+
+		//Round# 29
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[28]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[26]);
+		k[29] = (t1 ^ tmp) ^ z[2][26] ^ 3;
+
+		//Round# 30
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[29]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[27]);
+		k[30] = (t1 ^ tmp) ^ z[2][27] ^ 3;
+
+		//Round# 31
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[30]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[28]);
+		k[31] = (t1 ^ tmp) ^ z[2][28] ^ 3;
+
+		//Round# 32
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[31]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[29]);
+		k[32] = (t1 ^ tmp) ^ z[2][29] ^ 3;
+
+		//Round# 33
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[32]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[30]);
+		k[33] = (t1 ^ tmp) ^ z[2][30] ^ 3;
+
+		//Round# 34
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[33]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[31]);
+		k[34] = (t1 ^ tmp) ^ z[2][31] ^ 3;
+
+		//Round# 35
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[34]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[32]);
+		k[35] = (t1 ^ tmp) ^ z[2][32] ^ 3;
+
+		//Round# 36
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[35]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[33]);
+		k[36] = (t1 ^ tmp) ^ z[2][33] ^ 3;
+
+		//Round# 37
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[36]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[34]);
+		k[37] = (t1 ^ tmp) ^ z[2][34] ^ 3;
+
+		//Round# 38
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[37]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[35]);
+		k[38] = (t1 ^ tmp) ^ z[2][35] ^ 3;
+
+		//Round# 39
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[38]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[36]);
+		k[39] = (t1 ^ tmp) ^ z[2][36] ^ 3;
+
+		//Round# 40
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[39]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[37]);
+		k[40] = (t1 ^ tmp) ^ z[2][37] ^ 3;
+
+		//Round# 41
+		// Rotation Right 3 Operation(key[i-1]) => temp3
+		tmp = (ROR3(k[40]) );
+		tmp = (tmp ^ ROR1(tmp)) ; 
+		t1 = notOperation32(k[38]);
+		k[41] = (t1 ^ tmp) ^ z[2][38] ^ 3;
+        
+        return k;
+    }
+
+    var encrypt32 = function(plaintext, k, ciphertext){
+        var tmp = 0;
+        var x = plaintext[1];
+        var y = plaintext[0];
+		
+		//Round# 1
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[0]) %0x100000000);
+		y = tmp;
+
+		//Round# 2
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[1]) %0x100000000);
+		y = tmp;
+
+		//Round# 3
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[2]) %0x100000000);
+		y = tmp;
+
+		//Round# 4
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[3]) %0x100000000);
+		y = tmp;
+
+		//Round# 5
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[4]) %0x100000000);
+		y = tmp;
+
+		//Round# 6
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[5]) %0x100000000);
+		y = tmp;
+
+		//Round# 7
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[6]) %0x100000000);
+		y = tmp;
+
+		//Round# 8
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[7]) %0x100000000);
+		y = tmp;
+
+		//Round# 9
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[8]) %0x100000000);
+		y = tmp;
+
+		//Round# 10
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[9]) %0x100000000);
+		y = tmp;
+
+		//Round# 11
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[10]) %0x100000000);
+		y = tmp;
+
+		//Round# 12
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[11]) %0x100000000);
+		y = tmp;
+
+		//Round# 13
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[12]) %0x100000000);
+		y = tmp;
+
+		//Round# 14
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[13]) %0x100000000);
+		y = tmp;
+
+		//Round# 15
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[14]) %0x100000000);
+		y = tmp;
+
+		//Round# 16
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[15]) %0x100000000);
+		y = tmp;
+
+		//Round# 17
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[16]) %0x100000000);
+		y = tmp;
+
+		//Round# 18
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[17]) %0x100000000);
+		y = tmp;
+
+		//Round# 19
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[18]) %0x100000000);
+		y = tmp;
+
+		//Round# 20
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[19]) %0x100000000);
+		y = tmp;
+
+		//Round# 21
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[20]) %0x100000000);
+		y = tmp;
+
+		//Round# 22
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[21]) %0x100000000);
+		y = tmp;
+
+		//Round# 23
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[22]) %0x100000000);
+		y = tmp;
+
+		//Round# 24
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[23]) %0x100000000);
+		y = tmp;
+
+		//Round# 25
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[24]) %0x100000000);
+		y = tmp;
+
+		//Round# 26
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[25]) %0x100000000);
+		y = tmp;
+
+		//Round# 27
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[26]) %0x100000000);
+		y = tmp;
+
+		//Round# 28
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[27]) %0x100000000);
+		y = tmp;
+
+		//Round# 29
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[28]) %0x100000000);
+		y = tmp;
+
+		//Round# 30
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[29]) %0x100000000);
+		y = tmp;
+
+		//Round# 31
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[30]) %0x100000000);
+		y = tmp;
+
+		//Round# 32
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[31]) %0x100000000);
+		y = tmp;
+
+		//Round# 33
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[32]) %0x100000000);
+		y = tmp;
+
+		//Round# 34
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[33]) %0x100000000);
+		y = tmp;
+
+		//Round# 35
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[34]) %0x100000000);
+		y = tmp;
+
+		//Round# 36
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[35]) %0x100000000);
+		y = tmp;
+
+		//Round# 37
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[36]) %0x100000000);
+		y = tmp;
+
+		//Round# 38
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[37]) %0x100000000);
+		y = tmp;
+
+		//Round# 39
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[38]) %0x100000000);
+		y = tmp;
+
+		//Round# 40
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[39]) %0x100000000);
+		y = tmp;
+
+		//Round# 41
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[40]) %0x100000000);
+		y = tmp;
+
+		//Round# 42
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[41]) %0x100000000);
+		y = tmp;
+
+        ciphertext[0] = y;
+        ciphertext[1] = x;
+    }
+
+    var decrypt32 = function(plaintext, k, ciphertext){
+        var tmp = 0;
+        var x = ciphertext[0];
+        var y = ciphertext[1];
+		
+		//Round# 3
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[41]));
+		y = tmp;
+
+		//Round# 4
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[40]));
+		y = tmp;
+
+		//Round# 5
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[39]));
+		y = tmp;
+
+		//Round# 6
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[38]));
+		y = tmp;
+
+		//Round# 7
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[37]));
+		y = tmp;
+
+		//Round# 8
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[36]));
+		y = tmp;
+
+		//Round# 9
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[35]));
+		y = tmp;
+
+		//Round# 10
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[34]));
+		y = tmp;
+
+		//Round# 11
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[33]));
+		y = tmp;
+
+		//Round# 12
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[32]));
+		y = tmp;
+
+		//Round# 13
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[31]));
+		y = tmp;
+
+		//Round# 14
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[30]));
+		y = tmp;
+
+		//Round# 15
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[29]));
+		y = tmp;
+
+		//Round# 16
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[28]));
+		y = tmp;
+
+		//Round# 17
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[27]));
+		y = tmp;
+
+		//Round# 18
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[26]));
+		y = tmp;
+
+		//Round# 19
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[25]));
+		y = tmp;
+
+		//Round# 20
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[24]));
+		y = tmp;
+
+		//Round# 21
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[23]));
+		y = tmp;
+
+		//Round# 22
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[22]));
+		y = tmp;
+
+		//Round# 23
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[21]));
+		y = tmp;
+
+		//Round# 24
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[20]));
+		y = tmp;
+
+		//Round# 25
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[19]));
+		y = tmp;
+
+		//Round# 26
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[18]));
+		y = tmp;
+
+		//Round# 27
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[17]));
+		y = tmp;
+
+		//Round# 28
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[16]));
+		y = tmp;
+
+		//Round# 29
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[15]));
+		y = tmp;
+
+		//Round# 30
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[14]));
+		y = tmp;
+
+		//Round# 31
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[13]));
+		y = tmp;
+
+		//Round# 32
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[12]));
+		y = tmp;
+
+		//Round# 33
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[11]));
+		y = tmp;
+
+		//Round# 34
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[10]));
+		y = tmp;
+
+		//Round# 35
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[9]));
+		y = tmp;
+
+		//Round# 36
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[8]));
+		y = tmp;
+
+		//Round# 37
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[7]));
+		y = tmp;
+
+		//Round# 38
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[6]));
+		y = tmp;
+
+		//Round# 39
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[5]));
+		y = tmp;
+
+		//Round# 40
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[4]));
+		y = tmp;
+
+		//Round# 41
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[3]));
+		y = tmp;
+
+		//Round# 42
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[2]));
+		y = tmp;
+
+		//Round# 43
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[1]));
+		y = tmp;
+
+		//Round# 44
+		tmp =x;
+		x = ( (y ^ (ROL1(x)& ROL8(x)) ^ ROL2(x) ^k[0]));
+		y = tmp;
+
+        plaintext[0] = x;
+        plaintext[1] = y;
+    }
+
+    var simon64 = function()
+    {
+        var k =[0x03020100, 0x0b0a0908, 0x13121110, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0];
+        /*
+         k[0] = 0x0100;
+         k[1] = 0x0908;
+         k[2] = 0x1110;
+         k[3] = 0x1918;
+         */
+
+        var plaintext = [0x6e696c63, 0x6f722067];
+        var ciphertext = [0x111a8fc8, 0x5ca2e27f];
+        var plaintext2 = new Array(2);
+        var ciphertext2 = new Array(2);
+
+
+        keyexpansion32(k);
+
+
+		 console.log("original plaintext");
+         console.log("0x"+plaintext[0].toString(16));
+         console.log("0x"+plaintext[1].toString(16));
+		 console.log("original ciphertext");
+         console.log("0x"+ciphertext[0].toString(16));
+         console.log("0x"+ciphertext[1].toString(16));
+
+
+        encrypt32(plaintext, k, ciphertext2);
+
+        
+         console.log(" ");
+         console.log("ciphertext");
+         console.log("0x"+ciphertext2[0].toString(16));
+         console.log("0x"+ciphertext2[1].toString(16));
+        
+
+
+         decrypt32(plaintext2, k, ciphertext);
+        
+         console.log(" ");
+         console.log("plaintext");
+         console.log("0x"+plaintext2[0].toString(16));
+         console.log("0x"+plaintext2[1].toString(16));
+
+
+
+		 //Time Calculation
+		console.log("\nSimon 64/96\n");
+		document.write('Simon 64/96' + '<br />');
+
+		var Hz2 = 1.60*1073741824;
+		var Bytes = 8;
+		var Bytes2 = 12;
+
+		var size_test=100000;
+		var cnt_time;
+		var key_cpb = 0.0;
+		var enc_cpb = 0.0;
+		var dec_cpb = 0.0;
+		var idx = 0;
+
+		while(idx<10){
+			var d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					keyexpansion32(k);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			var ms = (n2-n)/size_test;
+			var s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes2;
+			if(cpb>0){
+				key_cpb += cpb;
+				idx++;
+			}
+		}
+		idx = 0;
+		key_cpb /= 10;
+		console.log("keyexpansion time: "+ms+"ms");
+		console.log("keyexpansion time: "+s+"s");
+		console.log("cpb: "+ key_cpb);
+
+		document.write('keyexpansion time: ',ms+'ms'+ '<br />');
+		document.write('keyexpansion time: ',s+'s'+ '<br />');
+		document.write('cpb: ',key_cpb+ '<br />');
+
+	
+		while(idx<10){
+			d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					encrypt32(plaintext, k, ciphertext2);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			ms = (n2-n)/size_test;
+			s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes;
+			if(cpb>0){
+				enc_cpb += cpb;
+				idx++;
+			}
+		}
+		enc_cpb /= 10;
+		idx = 0;
+		console.log("encryption time: "+ms+"ms");
+		console.log("encryption time: "+s+"s");
+		console.log("cpb: "+ enc_cpb);
+
+		document.write('encryption time: ',ms+'ms'+ '<br />');
+		document.write('encryption time: ',s+'s'+ '<br />');
+		document.write('cpb: ',enc_cpb+ '<br />');
+
+		while(idx<10){
+			d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					decrypt32(plaintext2, k, ciphertext2);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			ms = (n2-n)/size_test;
+			s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes;
+			if(cpb>0){
+				dec_cpb += cpb;
+				idx++;
+			}
+		}
+		dec_cpb /= 10;
+		idx = 0;
+		console.log("decryption time: "+(n2-n)/size_test+"ms");
+		console.log("decryption time: "+s+"s");
+		console.log("cpb: "+ dec_cpb);
+       
+	   document.write('decryption time: ',ms+'ms'+ '<br />');
+	   document.write('decryption time: ',s+'s'+ '<br />');
+	   document.write('cpb: ',dec_cpb+ '<br />');
+
+
+    }
+
+    //-->
+</script>
+<p>Click the following to see the result:</p> <form> <input type="button" value="Click Me" onclick="simon64();" /> </form>
+</body>
+</html>

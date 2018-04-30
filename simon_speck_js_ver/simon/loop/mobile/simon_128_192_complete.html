@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script language="javascript" type="text/javascript">
+    <!--
+
+    //simon 128/192
+ var n = 32;//64;
+ var m = 3;
+ var T = 69;
+ var j = 3;
+ var z = [
+        [1,1,1,1,1,0,1,0,0,0,1,0,0,1,0,1,0,1,1,0,0,0,0,1,1,1,0,0,1,1,0,1,1,1,1,1,0,1,0,0,0,1,0,0,1,0,1,0,1,1,0,0,0,0,1,1,1,0,0,1,1,0],
+        [1,0,0,0,1,1,1,0,1,1,1,1,1,0,0,1,0,0,1,1,0,0,0,0,1,0,1,1,0,1,0,1,0,0,0,1,1,1,0,1,1,1,1,1,0,0,1,0,0,1,1,0,0,0,0,1,0,1,1,0,1,0],
+        [1,0,1,0,1,1,1,1,0,1,1,1,0,0,0,0,0,0,1,1,0,1,0,0,1,0,0,1,1,0,0,0,1,0,1,0,0,0,0,1,0,0,0,1,1,1,1,1,1,0,0,1,0,1,1,0,1,1,0,0,1,1],
+        [1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,0,0,1,1,0,0,1,0,1,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,1,0,0,1,1,1,0,0,1,1,0,1,0,0,0,0,1,1,1,1],
+        [1,1,0,1,0,0,0,1,1,1,1,0,0,1,1,0,1,0,1,1,0,1,1,0,0,0,1,0,0,0,0,0,0,1,0,1,1,1,0,0,0,0,1,1,0,0,1,0,1,0,0,1,0,0,1,1,1,0,1,1,1,1]
+    ];
+
+var notOperation64 = function(x){
+        return (0xFFFFFFFF ^ x);
+    }
+
+
+var keyexpansion64 = function(k)
+{
+        var c1 = 0xffffffff;
+        var c2 = 0xfffffffc;
+        var tmp1, tmp2, tmp3, tmp4 = 0;
+        var t1, t2 = 0;
+        
+
+        for(var i = m; i<T; i++){
+			
+            //tmp = (ROR3(k[i-1]));
+            tmp1 = (((k[i-1][1]<<(n-3))>>>0)|((k[i-1][0]>>>3))>>>0);
+            tmp2 = (((k[i-1][0]<<(n-3))>>>0)|((k[i-1][1]>>>3)>>>0));
+
+			
+            if(m == 4){
+                //tmp = tmp ^ k[i-3];
+                tmp1 = tmp1 ^k[i-3][0];
+                tmp2 = tmp2 ^k[i-3][1];
+            }
+
+			tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+			tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+			
+            tmp1 = (tmp1^tmp3);
+            tmp2 = (tmp2^tmp4);
+            //tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+            //t1 = notOperation64(k[i-m]);
+            t1 = notOperation64(k[i-m][0]);
+            t2 = notOperation64(k[i-m][1]);
+
+
+            //k[i] = (((t1 ^ tmp) ^ z[j][(i-m)%62]) ^ 3);
+            k[i][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[j][(i-m)%62]) ^ 3);
+            k[i][1] = (((t2 ^ tmp2) ^ z[j][(i-m)%62]) ^ 3);
+
+        }
+        return k;
+}
+
+var encrypt64 = function(plaintext, k, ciphertext){
+	var tmp1, tmp2 = 0;
+	var x1 = plaintext[1][0];
+	var x2 = plaintext[1][1];
+	var y1 = plaintext[0][0];
+	var y2 = plaintext[0][1];
+
+	var t11, t12, t21, t22, t31, t32, t41, t42;
+
+
+	for(var i=0; i<T; i++){
+		//console.log("i: "+i+"\n");
+		tmp1 =x1;
+		tmp2 =x2;
+		// result of simon encryption per round
+		var test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[i][0];
+		var test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[i][1];
+		
+		x1 = test11;
+		x2 = test12;
+
+		y1 = tmp1;
+		y2 = tmp2;
+
+
+	}
+	ciphertext[0][0] = y1;
+	ciphertext[0][1] = y2;
+	ciphertext[1][0] = x1;
+	ciphertext[1][1] = x2;
+}
+
+var decrypt64 = function(plaintext, k, ciphertext){
+	var tmp1, tmp2 = 0;
+	var x1 = ciphertext[0][0];
+	var x2 = ciphertext[0][1];
+	var y1 = ciphertext[1][0];
+	var y2 = ciphertext[1][1];
+
+	for(var i= T-1; i>=0; i--)
+	{		
+		tmp1 =x1;
+		tmp2 =x2;
+
+		// result of simon encryption per round
+		var test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[i][0];
+		var test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[i][1];
+		
+		x1 = test11;
+		x2 = test12;
+
+		y1 = tmp1;
+		y2 = tmp2;
+
+		if(i == 0){
+			break;
+		}
+	}
+	plaintext[0][0] = x1;
+	plaintext[0][1] = x2;
+	plaintext[1][0] = y1;
+	plaintext[1][1] = y2;
+}
+
+
+
+var simon = function(){
+	//simon128/128
+        var key = new Array(69);
+        for(var i=0; i<69; i++){
+            key[i] = new Array(2);
+            key[i][0] = 0x0;
+            key[i][1] = 0x0;
+        }
+
+        key[0][0] = 0x07060504;
+        key[0][1] = 0x03020100;
+        key[1][0] = 0x0f0e0d0c;
+        key[1][1] = 0x0b0a0908;
+		key[2][0] = 0x17161514;
+        key[2][1] = 0x13121110;
+
+
+        var plaintext = new Array(2);
+        for(var i=0; i<2; i++){
+            plaintext[i] = new Array(2);
+        }
+        plaintext[0][0] = 0x65687720;
+        plaintext[0][1] = 0x65626972;
+        plaintext[1][0] = 0x20657265;
+        plaintext[1][1] = 0x6874206e;
+		
+        for(var i=0; i<2; i++){
+            console.log("plaintext["+i+"][0]: 0x"+plaintext[i][0].toString(16)+"\n");
+            console.log("plaintext["+i+"][1]: 0x"+plaintext[i][1].toString(16)+"\n");
+        }
+		
+
+		var plaintext2 = new Array(2);
+        for(var i=0; i<2; i++){
+            plaintext2[i] = new Array(2);
+			plaintext2[i][0] = 0x0;
+            plaintext2[i][1] = 0x0;
+        }
+
+        var ciphertext = new Array(2);
+        for(var i=0; i<2; i++){
+            ciphertext[i] = new Array(2);
+            ciphertext[i][0] = 0x0;
+            ciphertext[i][1] = 0x0;
+        }
+
+        key = keyexpansion64(key);
+		/*
+		for(var i=0; i<68; i++){
+			console.log(i);
+			console.log("key["+i+"][0]: "+key[i][0].toString(16));
+			console.log("key["+i+"][1]: "+key[i][1].toString(16));
+		}
+		*/	
+
+		encrypt64(plaintext, key, ciphertext);
+
+		console.log("Ciphertext");
+		for(var i=0; i<2; i++){
+            console.log("ciphertext["+i+"][0]: 0x"+ciphertext[i][0].toString(16));
+			console.log("ciphertext["+i+"][0]: "+ciphertext[i][0]);
+            console.log("ciphertext["+i+"][1]: 0x"+ciphertext[i][1].toString(16));
+			console.log("ciphertext["+i+"][1]: "+ciphertext[i][1]+"\n");
+        }
+
+		decrypt64(plaintext2, key, ciphertext);
+
+		console.log("Plaintext");
+		for(var i=0; i<2; i++){
+            console.log("plaintext2["+i+"][0]: 0x"+plaintext2[i][0].toString(16));
+			console.log("plaintext2["+i+"][0]: "+plaintext2[i][0]);
+            console.log("plaintext2["+i+"][1]: 0x"+plaintext2[i][1].toString(16));
+			console.log("plaintext2["+i+"][1]: "+plaintext2[i][1]+"\n");
+        }
+
+
+		//Time Calculation
+
+		console.log("\nSimon 128/192\n");
+		document.write('Simon 128/192' + '<br />');
+
+		var Hz2 = 2.30*1073741824; //3.40*1073741824;
+		var Bytes = 16;
+		var Bytes2 = 24;
+
+		var size_test=10000;
+		var cnt_time;
+		var key_cpb = 0.0;
+		var enc_cpb = 0.0;
+		var dec_cpb = 0.0;
+		var idx = 0;
+
+		while(idx < 10){
+			var d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					keyexpansion64(key);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			var ms = (n2-n)/size_test;
+			var s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes2;
+			if(cpb > 0){
+				key_cpb += cpb;
+				idx++;
+			}
+		}
+		key_cpb /= 10;
+		idx = 0;
+		console.log("keyexpansion time: "+ms+"ms");
+		console.log("keyexpansion time: "+s+"s");
+		console.log("cpb: "+ key_cpb);
+
+		document.write('keyexpansion time: ',ms+'ms'+ '<br />');
+		document.write('keyexpansion time: ',s+'s'+ '<br />');
+		document.write('cpb: ',key_cpb+ '<br />');
+
+
+		while(idx < 10){
+			d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					encrypt64(plaintext, key, ciphertext);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			ms = (n2-n)/size_test;
+			s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes;
+			if(cpb > 0){
+				enc_cpb += cpb;
+				idx++;
+			}
+		}
+		enc_cpb /= 10;
+		idx = 0;
+		console.log("encryption time: "+ms+"ms");
+		console.log("encryption time: "+s+"s");
+		console.log("cpb: "+ enc_cpb);
+
+		document.write('encryption time: ',ms+'ms'+ '<br />');
+		document.write('encryption time: ',s+'s'+ '<br />');
+		document.write('cpb: ',enc_cpb+ '<br />');
+
+		while(idx < 10){
+			d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					decrypt64(plaintext2, key, ciphertext);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			ms = (n2-n)/size_test;
+			s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes;
+			if(cpb > 0){
+				dec_cpb += cpb;
+				idx++;
+			}
+		}
+		dec_cpb /= 10;
+		idx = 0;
+		console.log("decryption time: "+(n2-n)/size_test+"ms");
+		console.log("decryption time: "+s+"s");
+		console.log("cpb: "+ dec_cpb);
+
+		document.write('decryption time: ',ms+'ms'+ '<br />');
+		document.write('decryption time: ',s+'s'+ '<br />');
+		document.write('cpb: ',dec_cpb+ '<br />');
+
+}
+
+
+    //-->
+</script>
+<p>Click the following to see the result:</p> <form> <input type="button" value="Click Me" onclick="simon();" /> </form>
+</body>
+</html>

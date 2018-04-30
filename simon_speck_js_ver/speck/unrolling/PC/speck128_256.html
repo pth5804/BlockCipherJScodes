@@ -1,0 +1,3926 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script language="javascript" type="text/javascript">
+    <!--
+
+//speck128/256
+var m = 4;
+var n = 32;
+var T = 34;
+var alpha = 8;
+var beta = 3;
+
+
+var keyexpansion64 = function(k, l)
+{
+	var i = 0;
+
+	var temp1, temp2, temp3, temp4 = 0x0;
+
+	var carry = 0x0;
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[0][0]<<(n-alpha))>>>0)|((l[0][1]>>>alpha))>>>0);
+	temp0 = (((l[0][1]<<(n-alpha))>>>0)|((l[0][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[0][1]);
+	if( (temp1+k[0][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[0][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^0;
+	temp1 = temp1>>>0;
+
+	l[3][0] = temp0;
+	l[3][1] = temp1;
+	l[3][0] = ( (l[3][0])>>>0);
+	l[3][1] = ( (l[3][1])>>>0);
+
+	t1 = ((k[0][0]<<beta)>>>0);
+	t2 = (k[0][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[0][0]<<beta)>>>0)|(k[0][1]>>>(n-beta)) );
+	temp4 = ( ((k[0][1]<<beta)>>>0)|(k[0][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[1][0] = temp3^temp0;
+	k[1][1] = temp4^temp1;
+	k[1][0] = ((k[1][0])>>>0);
+	k[1][1] = ((k[1][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[1][0]<<(n-alpha))>>>0)|((l[1][1]>>>alpha))>>>0);
+	temp0 = (((l[1][1]<<(n-alpha))>>>0)|((l[1][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[1][1]);
+	if( (temp1+k[1][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[1][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^1;
+	temp1 = temp1>>>0;
+
+	l[4][0] = temp0;
+	l[4][1] = temp1;
+	l[4][0] = ( (l[4][0])>>>0);
+	l[4][1] = ( (l[4][1])>>>0);
+
+	t1 = ((k[1][0]<<beta)>>>0);
+	t2 = (k[1][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[1][0]<<beta)>>>0)|(k[1][1]>>>(n-beta)) );
+	temp4 = ( ((k[1][1]<<beta)>>>0)|(k[1][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[2][0] = temp3^temp0;
+	k[2][1] = temp4^temp1;
+	k[2][0] = ((k[2][0])>>>0);
+	k[2][1] = ((k[2][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[2][0]<<(n-alpha))>>>0)|((l[2][1]>>>alpha))>>>0);
+	temp0 = (((l[2][1]<<(n-alpha))>>>0)|((l[2][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[2][1]);
+	if( (temp1+k[2][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[2][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^2;
+	temp1 = temp1>>>0;
+
+	l[5][0] = temp0;
+	l[5][1] = temp1;
+	l[5][0] = ( (l[5][0])>>>0);
+	l[5][1] = ( (l[5][1])>>>0);
+
+	t1 = ((k[2][0]<<beta)>>>0);
+	t2 = (k[2][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[2][0]<<beta)>>>0)|(k[2][1]>>>(n-beta)) );
+	temp4 = ( ((k[2][1]<<beta)>>>0)|(k[2][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[3][0] = temp3^temp0;
+	k[3][1] = temp4^temp1;
+	k[3][0] = ((k[3][0])>>>0);
+	k[3][1] = ((k[3][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[3][0]<<(n-alpha))>>>0)|((l[3][1]>>>alpha))>>>0);
+	temp0 = (((l[3][1]<<(n-alpha))>>>0)|((l[3][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[3][1]);
+	if( (temp1+k[3][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[3][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^3;
+	temp1 = temp1>>>0;
+
+	l[6][0] = temp0;
+	l[6][1] = temp1;
+	l[6][0] = ( (l[6][0])>>>0);
+	l[6][1] = ( (l[6][1])>>>0);
+
+	t1 = ((k[3][0]<<beta)>>>0);
+	t2 = (k[3][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[3][0]<<beta)>>>0)|(k[3][1]>>>(n-beta)) );
+	temp4 = ( ((k[3][1]<<beta)>>>0)|(k[3][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[4][0] = temp3^temp0;
+	k[4][1] = temp4^temp1;
+	k[4][0] = ((k[4][0])>>>0);
+	k[4][1] = ((k[4][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[4][0]<<(n-alpha))>>>0)|((l[4][1]>>>alpha))>>>0);
+	temp0 = (((l[4][1]<<(n-alpha))>>>0)|((l[4][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[4][1]);
+	if( (temp1+k[4][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[4][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^4;
+	temp1 = temp1>>>0;
+
+	l[7][0] = temp0;
+	l[7][1] = temp1;
+	l[7][0] = ( (l[7][0])>>>0);
+	l[7][1] = ( (l[7][1])>>>0);
+
+	t1 = ((k[4][0]<<beta)>>>0);
+	t2 = (k[4][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[4][0]<<beta)>>>0)|(k[4][1]>>>(n-beta)) );
+	temp4 = ( ((k[4][1]<<beta)>>>0)|(k[4][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[5][0] = temp3^temp0;
+	k[5][1] = temp4^temp1;
+	k[5][0] = ((k[5][0])>>>0);
+	k[5][1] = ((k[5][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[5][0]<<(n-alpha))>>>0)|((l[5][1]>>>alpha))>>>0);
+	temp0 = (((l[5][1]<<(n-alpha))>>>0)|((l[5][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[5][1]);
+	if( (temp1+k[5][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[5][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^5;
+	temp1 = temp1>>>0;
+
+	l[8][0] = temp0;
+	l[8][1] = temp1;
+	l[8][0] = ( (l[8][0])>>>0);
+	l[8][1] = ( (l[8][1])>>>0);
+
+	t1 = ((k[5][0]<<beta)>>>0);
+	t2 = (k[5][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[5][0]<<beta)>>>0)|(k[5][1]>>>(n-beta)) );
+	temp4 = ( ((k[5][1]<<beta)>>>0)|(k[5][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[6][0] = temp3^temp0;
+	k[6][1] = temp4^temp1;
+	k[6][0] = ((k[6][0])>>>0);
+	k[6][1] = ((k[6][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[6][0]<<(n-alpha))>>>0)|((l[6][1]>>>alpha))>>>0);
+	temp0 = (((l[6][1]<<(n-alpha))>>>0)|((l[6][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[6][1]);
+	if( (temp1+k[6][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[6][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^6;
+	temp1 = temp1>>>0;
+
+	l[9][0] = temp0;
+	l[9][1] = temp1;
+	l[9][0] = ( (l[9][0])>>>0);
+	l[9][1] = ( (l[9][1])>>>0);
+
+	t1 = ((k[6][0]<<beta)>>>0);
+	t2 = (k[6][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[6][0]<<beta)>>>0)|(k[6][1]>>>(n-beta)) );
+	temp4 = ( ((k[6][1]<<beta)>>>0)|(k[6][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[7][0] = temp3^temp0;
+	k[7][1] = temp4^temp1;
+	k[7][0] = ((k[7][0])>>>0);
+	k[7][1] = ((k[7][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[7][0]<<(n-alpha))>>>0)|((l[7][1]>>>alpha))>>>0);
+	temp0 = (((l[7][1]<<(n-alpha))>>>0)|((l[7][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[7][1]);
+	if( (temp1+k[7][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[7][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^7;
+	temp1 = temp1>>>0;
+
+	l[10][0] = temp0;
+	l[10][1] = temp1;
+	l[10][0] = ( (l[10][0])>>>0);
+	l[10][1] = ( (l[10][1])>>>0);
+
+	t1 = ((k[7][0]<<beta)>>>0);
+	t2 = (k[7][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[7][0]<<beta)>>>0)|(k[7][1]>>>(n-beta)) );
+	temp4 = ( ((k[7][1]<<beta)>>>0)|(k[7][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[8][0] = temp3^temp0;
+	k[8][1] = temp4^temp1;
+	k[8][0] = ((k[8][0])>>>0);
+	k[8][1] = ((k[8][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[8][0]<<(n-alpha))>>>0)|((l[8][1]>>>alpha))>>>0);
+	temp0 = (((l[8][1]<<(n-alpha))>>>0)|((l[8][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[8][1]);
+	if( (temp1+k[8][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[8][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^8;
+	temp1 = temp1>>>0;
+
+	l[11][0] = temp0;
+	l[11][1] = temp1;
+	l[11][0] = ( (l[11][0])>>>0);
+	l[11][1] = ( (l[11][1])>>>0);
+
+	t1 = ((k[8][0]<<beta)>>>0);
+	t2 = (k[8][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[8][0]<<beta)>>>0)|(k[8][1]>>>(n-beta)) );
+	temp4 = ( ((k[8][1]<<beta)>>>0)|(k[8][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[9][0] = temp3^temp0;
+	k[9][1] = temp4^temp1;
+	k[9][0] = ((k[9][0])>>>0);
+	k[9][1] = ((k[9][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[9][0]<<(n-alpha))>>>0)|((l[9][1]>>>alpha))>>>0);
+	temp0 = (((l[9][1]<<(n-alpha))>>>0)|((l[9][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[9][1]);
+	if( (temp1+k[9][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[9][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^9;
+	temp1 = temp1>>>0;
+
+	l[12][0] = temp0;
+	l[12][1] = temp1;
+	l[12][0] = ( (l[12][0])>>>0);
+	l[12][1] = ( (l[12][1])>>>0);
+
+	t1 = ((k[9][0]<<beta)>>>0);
+	t2 = (k[9][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[9][0]<<beta)>>>0)|(k[9][1]>>>(n-beta)) );
+	temp4 = ( ((k[9][1]<<beta)>>>0)|(k[9][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[10][0] = temp3^temp0;
+	k[10][1] = temp4^temp1;
+	k[10][0] = ((k[10][0])>>>0);
+	k[10][1] = ((k[10][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[10][0]<<(n-alpha))>>>0)|((l[10][1]>>>alpha))>>>0);
+	temp0 = (((l[10][1]<<(n-alpha))>>>0)|((l[10][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[10][1]);
+	if( (temp1+k[10][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[10][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^10;
+	temp1 = temp1>>>0;
+
+	l[13][0] = temp0;
+	l[13][1] = temp1;
+	l[13][0] = ( (l[13][0])>>>0);
+	l[13][1] = ( (l[13][1])>>>0);
+
+	t1 = ((k[10][0]<<beta)>>>0);
+	t2 = (k[10][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[10][0]<<beta)>>>0)|(k[10][1]>>>(n-beta)) );
+	temp4 = ( ((k[10][1]<<beta)>>>0)|(k[10][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[11][0] = temp3^temp0;
+	k[11][1] = temp4^temp1;
+	k[11][0] = ((k[11][0])>>>0);
+	k[11][1] = ((k[11][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[11][0]<<(n-alpha))>>>0)|((l[11][1]>>>alpha))>>>0);
+	temp0 = (((l[11][1]<<(n-alpha))>>>0)|((l[11][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[11][1]);
+	if( (temp1+k[11][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[11][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^11;
+	temp1 = temp1>>>0;
+
+	l[14][0] = temp0;
+	l[14][1] = temp1;
+	l[14][0] = ( (l[14][0])>>>0);
+	l[14][1] = ( (l[14][1])>>>0);
+
+	t1 = ((k[11][0]<<beta)>>>0);
+	t2 = (k[11][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[11][0]<<beta)>>>0)|(k[11][1]>>>(n-beta)) );
+	temp4 = ( ((k[11][1]<<beta)>>>0)|(k[11][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[12][0] = temp3^temp0;
+	k[12][1] = temp4^temp1;
+	k[12][0] = ((k[12][0])>>>0);
+	k[12][1] = ((k[12][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[12][0]<<(n-alpha))>>>0)|((l[12][1]>>>alpha))>>>0);
+	temp0 = (((l[12][1]<<(n-alpha))>>>0)|((l[12][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[12][1]);
+	if( (temp1+k[12][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[12][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^12;
+	temp1 = temp1>>>0;
+
+	l[15][0] = temp0;
+	l[15][1] = temp1;
+	l[15][0] = ( (l[15][0])>>>0);
+	l[15][1] = ( (l[15][1])>>>0);
+
+	t1 = ((k[12][0]<<beta)>>>0);
+	t2 = (k[12][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[12][0]<<beta)>>>0)|(k[12][1]>>>(n-beta)) );
+	temp4 = ( ((k[12][1]<<beta)>>>0)|(k[12][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[13][0] = temp3^temp0;
+	k[13][1] = temp4^temp1;
+	k[13][0] = ((k[13][0])>>>0);
+	k[13][1] = ((k[13][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[13][0]<<(n-alpha))>>>0)|((l[13][1]>>>alpha))>>>0);
+	temp0 = (((l[13][1]<<(n-alpha))>>>0)|((l[13][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[13][1]);
+	if( (temp1+k[13][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[13][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^13;
+	temp1 = temp1>>>0;
+
+	l[16][0] = temp0;
+	l[16][1] = temp1;
+	l[16][0] = ( (l[16][0])>>>0);
+	l[16][1] = ( (l[16][1])>>>0);
+
+	t1 = ((k[13][0]<<beta)>>>0);
+	t2 = (k[13][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[13][0]<<beta)>>>0)|(k[13][1]>>>(n-beta)) );
+	temp4 = ( ((k[13][1]<<beta)>>>0)|(k[13][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[14][0] = temp3^temp0;
+	k[14][1] = temp4^temp1;
+	k[14][0] = ((k[14][0])>>>0);
+	k[14][1] = ((k[14][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[14][0]<<(n-alpha))>>>0)|((l[14][1]>>>alpha))>>>0);
+	temp0 = (((l[14][1]<<(n-alpha))>>>0)|((l[14][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[14][1]);
+	if( (temp1+k[14][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[14][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^14;
+	temp1 = temp1>>>0;
+
+	l[17][0] = temp0;
+	l[17][1] = temp1;
+	l[17][0] = ( (l[17][0])>>>0);
+	l[17][1] = ( (l[17][1])>>>0);
+
+	t1 = ((k[14][0]<<beta)>>>0);
+	t2 = (k[14][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[14][0]<<beta)>>>0)|(k[14][1]>>>(n-beta)) );
+	temp4 = ( ((k[14][1]<<beta)>>>0)|(k[14][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[15][0] = temp3^temp0;
+	k[15][1] = temp4^temp1;
+	k[15][0] = ((k[15][0])>>>0);
+	k[15][1] = ((k[15][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[15][0]<<(n-alpha))>>>0)|((l[15][1]>>>alpha))>>>0);
+	temp0 = (((l[15][1]<<(n-alpha))>>>0)|((l[15][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[15][1]);
+	if( (temp1+k[15][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[15][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^15;
+	temp1 = temp1>>>0;
+
+	l[18][0] = temp0;
+	l[18][1] = temp1;
+	l[18][0] = ( (l[18][0])>>>0);
+	l[18][1] = ( (l[18][1])>>>0);
+
+	t1 = ((k[15][0]<<beta)>>>0);
+	t2 = (k[15][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[15][0]<<beta)>>>0)|(k[15][1]>>>(n-beta)) );
+	temp4 = ( ((k[15][1]<<beta)>>>0)|(k[15][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[16][0] = temp3^temp0;
+	k[16][1] = temp4^temp1;
+	k[16][0] = ((k[16][0])>>>0);
+	k[16][1] = ((k[16][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[16][0]<<(n-alpha))>>>0)|((l[16][1]>>>alpha))>>>0);
+	temp0 = (((l[16][1]<<(n-alpha))>>>0)|((l[16][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[16][1]);
+	if( (temp1+k[16][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[16][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^16;
+	temp1 = temp1>>>0;
+
+	l[19][0] = temp0;
+	l[19][1] = temp1;
+	l[19][0] = ( (l[19][0])>>>0);
+	l[19][1] = ( (l[19][1])>>>0);
+
+	t1 = ((k[16][0]<<beta)>>>0);
+	t2 = (k[16][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[16][0]<<beta)>>>0)|(k[16][1]>>>(n-beta)) );
+	temp4 = ( ((k[16][1]<<beta)>>>0)|(k[16][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[17][0] = temp3^temp0;
+	k[17][1] = temp4^temp1;
+	k[17][0] = ((k[17][0])>>>0);
+	k[17][1] = ((k[17][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[17][0]<<(n-alpha))>>>0)|((l[17][1]>>>alpha))>>>0);
+	temp0 = (((l[17][1]<<(n-alpha))>>>0)|((l[17][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[17][1]);
+	if( (temp1+k[17][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[17][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^17;
+	temp1 = temp1>>>0;
+
+	l[20][0] = temp0;
+	l[20][1] = temp1;
+	l[20][0] = ( (l[20][0])>>>0);
+	l[20][1] = ( (l[20][1])>>>0);
+
+	t1 = ((k[17][0]<<beta)>>>0);
+	t2 = (k[17][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[17][0]<<beta)>>>0)|(k[17][1]>>>(n-beta)) );
+	temp4 = ( ((k[17][1]<<beta)>>>0)|(k[17][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[18][0] = temp3^temp0;
+	k[18][1] = temp4^temp1;
+	k[18][0] = ((k[18][0])>>>0);
+	k[18][1] = ((k[18][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[18][0]<<(n-alpha))>>>0)|((l[18][1]>>>alpha))>>>0);
+	temp0 = (((l[18][1]<<(n-alpha))>>>0)|((l[18][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[18][1]);
+	if( (temp1+k[18][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[18][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^18;
+	temp1 = temp1>>>0;
+
+	l[21][0] = temp0;
+	l[21][1] = temp1;
+	l[21][0] = ( (l[21][0])>>>0);
+	l[21][1] = ( (l[21][1])>>>0);
+
+	t1 = ((k[18][0]<<beta)>>>0);
+	t2 = (k[18][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[18][0]<<beta)>>>0)|(k[18][1]>>>(n-beta)) );
+	temp4 = ( ((k[18][1]<<beta)>>>0)|(k[18][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[19][0] = temp3^temp0;
+	k[19][1] = temp4^temp1;
+	k[19][0] = ((k[19][0])>>>0);
+	k[19][1] = ((k[19][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[19][0]<<(n-alpha))>>>0)|((l[19][1]>>>alpha))>>>0);
+	temp0 = (((l[19][1]<<(n-alpha))>>>0)|((l[19][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[19][1]);
+	if( (temp1+k[19][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[19][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^19;
+	temp1 = temp1>>>0;
+
+	l[22][0] = temp0;
+	l[22][1] = temp1;
+	l[22][0] = ( (l[22][0])>>>0);
+	l[22][1] = ( (l[22][1])>>>0);
+
+	t1 = ((k[19][0]<<beta)>>>0);
+	t2 = (k[19][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[19][0]<<beta)>>>0)|(k[19][1]>>>(n-beta)) );
+	temp4 = ( ((k[19][1]<<beta)>>>0)|(k[19][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[20][0] = temp3^temp0;
+	k[20][1] = temp4^temp1;
+	k[20][0] = ((k[20][0])>>>0);
+	k[20][1] = ((k[20][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[20][0]<<(n-alpha))>>>0)|((l[20][1]>>>alpha))>>>0);
+	temp0 = (((l[20][1]<<(n-alpha))>>>0)|((l[20][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[20][1]);
+	if( (temp1+k[20][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[20][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^20;
+	temp1 = temp1>>>0;
+
+	l[23][0] = temp0;
+	l[23][1] = temp1;
+	l[23][0] = ( (l[23][0])>>>0);
+	l[23][1] = ( (l[23][1])>>>0);
+
+	t1 = ((k[20][0]<<beta)>>>0);
+	t2 = (k[20][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[20][0]<<beta)>>>0)|(k[20][1]>>>(n-beta)) );
+	temp4 = ( ((k[20][1]<<beta)>>>0)|(k[20][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[21][0] = temp3^temp0;
+	k[21][1] = temp4^temp1;
+	k[21][0] = ((k[21][0])>>>0);
+	k[21][1] = ((k[21][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[21][0]<<(n-alpha))>>>0)|((l[21][1]>>>alpha))>>>0);
+	temp0 = (((l[21][1]<<(n-alpha))>>>0)|((l[21][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[21][1]);
+	if( (temp1+k[21][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[21][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^21;
+	temp1 = temp1>>>0;
+
+	l[24][0] = temp0;
+	l[24][1] = temp1;
+	l[24][0] = ( (l[24][0])>>>0);
+	l[24][1] = ( (l[24][1])>>>0);
+
+	t1 = ((k[21][0]<<beta)>>>0);
+	t2 = (k[21][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[21][0]<<beta)>>>0)|(k[21][1]>>>(n-beta)) );
+	temp4 = ( ((k[21][1]<<beta)>>>0)|(k[21][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[22][0] = temp3^temp0;
+	k[22][1] = temp4^temp1;
+	k[22][0] = ((k[22][0])>>>0);
+	k[22][1] = ((k[22][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[22][0]<<(n-alpha))>>>0)|((l[22][1]>>>alpha))>>>0);
+	temp0 = (((l[22][1]<<(n-alpha))>>>0)|((l[22][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[22][1]);
+	if( (temp1+k[22][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[22][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^22;
+	temp1 = temp1>>>0;
+
+	l[25][0] = temp0;
+	l[25][1] = temp1;
+	l[25][0] = ( (l[25][0])>>>0);
+	l[25][1] = ( (l[25][1])>>>0);
+
+	t1 = ((k[22][0]<<beta)>>>0);
+	t2 = (k[22][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[22][0]<<beta)>>>0)|(k[22][1]>>>(n-beta)) );
+	temp4 = ( ((k[22][1]<<beta)>>>0)|(k[22][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[23][0] = temp3^temp0;
+	k[23][1] = temp4^temp1;
+	k[23][0] = ((k[23][0])>>>0);
+	k[23][1] = ((k[23][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[23][0]<<(n-alpha))>>>0)|((l[23][1]>>>alpha))>>>0);
+	temp0 = (((l[23][1]<<(n-alpha))>>>0)|((l[23][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[23][1]);
+	if( (temp1+k[23][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[23][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^23;
+	temp1 = temp1>>>0;
+
+	l[26][0] = temp0;
+	l[26][1] = temp1;
+	l[26][0] = ( (l[26][0])>>>0);
+	l[26][1] = ( (l[26][1])>>>0);
+
+	t1 = ((k[23][0]<<beta)>>>0);
+	t2 = (k[23][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[23][0]<<beta)>>>0)|(k[23][1]>>>(n-beta)) );
+	temp4 = ( ((k[23][1]<<beta)>>>0)|(k[23][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[24][0] = temp3^temp0;
+	k[24][1] = temp4^temp1;
+	k[24][0] = ((k[24][0])>>>0);
+	k[24][1] = ((k[24][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[24][0]<<(n-alpha))>>>0)|((l[24][1]>>>alpha))>>>0);
+	temp0 = (((l[24][1]<<(n-alpha))>>>0)|((l[24][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[24][1]);
+	if( (temp1+k[24][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[24][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^24;
+	temp1 = temp1>>>0;
+
+	l[27][0] = temp0;
+	l[27][1] = temp1;
+	l[27][0] = ( (l[27][0])>>>0);
+	l[27][1] = ( (l[27][1])>>>0);
+
+	t1 = ((k[24][0]<<beta)>>>0);
+	t2 = (k[24][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[24][0]<<beta)>>>0)|(k[24][1]>>>(n-beta)) );
+	temp4 = ( ((k[24][1]<<beta)>>>0)|(k[24][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[25][0] = temp3^temp0;
+	k[25][1] = temp4^temp1;
+	k[25][0] = ((k[25][0])>>>0);
+	k[25][1] = ((k[25][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[25][0]<<(n-alpha))>>>0)|((l[25][1]>>>alpha))>>>0);
+	temp0 = (((l[25][1]<<(n-alpha))>>>0)|((l[25][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[25][1]);
+	if( (temp1+k[25][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[25][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^25;
+	temp1 = temp1>>>0;
+
+	l[28][0] = temp0;
+	l[28][1] = temp1;
+	l[28][0] = ( (l[28][0])>>>0);
+	l[28][1] = ( (l[28][1])>>>0);
+
+	t1 = ((k[25][0]<<beta)>>>0);
+	t2 = (k[25][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[25][0]<<beta)>>>0)|(k[25][1]>>>(n-beta)) );
+	temp4 = ( ((k[25][1]<<beta)>>>0)|(k[25][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[26][0] = temp3^temp0;
+	k[26][1] = temp4^temp1;
+	k[26][0] = ((k[26][0])>>>0);
+	k[26][1] = ((k[26][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[26][0]<<(n-alpha))>>>0)|((l[26][1]>>>alpha))>>>0);
+	temp0 = (((l[26][1]<<(n-alpha))>>>0)|((l[26][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[26][1]);
+	if( (temp1+k[26][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[26][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^26;
+	temp1 = temp1>>>0;
+
+	l[29][0] = temp0;
+	l[29][1] = temp1;
+	l[29][0] = ( (l[29][0])>>>0);
+	l[29][1] = ( (l[29][1])>>>0);
+
+	t1 = ((k[26][0]<<beta)>>>0);
+	t2 = (k[26][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[26][0]<<beta)>>>0)|(k[26][1]>>>(n-beta)) );
+	temp4 = ( ((k[26][1]<<beta)>>>0)|(k[26][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[27][0] = temp3^temp0;
+	k[27][1] = temp4^temp1;
+	k[27][0] = ((k[27][0])>>>0);
+	k[27][1] = ((k[27][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[27][0]<<(n-alpha))>>>0)|((l[27][1]>>>alpha))>>>0);
+	temp0 = (((l[27][1]<<(n-alpha))>>>0)|((l[27][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[27][1]);
+	if( (temp1+k[27][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[27][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^27;
+	temp1 = temp1>>>0;
+
+	l[30][0] = temp0;
+	l[30][1] = temp1;
+	l[30][0] = ( (l[30][0])>>>0);
+	l[30][1] = ( (l[30][1])>>>0);
+
+	t1 = ((k[27][0]<<beta)>>>0);
+	t2 = (k[27][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[27][0]<<beta)>>>0)|(k[27][1]>>>(n-beta)) );
+	temp4 = ( ((k[27][1]<<beta)>>>0)|(k[27][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[28][0] = temp3^temp0;
+	k[28][1] = temp4^temp1;
+	k[28][0] = ((k[28][0])>>>0);
+	k[28][1] = ((k[28][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[28][0]<<(n-alpha))>>>0)|((l[28][1]>>>alpha))>>>0);
+	temp0 = (((l[28][1]<<(n-alpha))>>>0)|((l[28][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[28][1]);
+	if( (temp1+k[28][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[28][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^28;
+	temp1 = temp1>>>0;
+
+	l[31][0] = temp0;
+	l[31][1] = temp1;
+	l[31][0] = ( (l[31][0])>>>0);
+	l[31][1] = ( (l[31][1])>>>0);
+
+	t1 = ((k[28][0]<<beta)>>>0);
+	t2 = (k[28][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[28][0]<<beta)>>>0)|(k[28][1]>>>(n-beta)) );
+	temp4 = ( ((k[28][1]<<beta)>>>0)|(k[28][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[29][0] = temp3^temp0;
+	k[29][1] = temp4^temp1;
+	k[29][0] = ((k[29][0])>>>0);
+	k[29][1] = ((k[29][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[29][0]<<(n-alpha))>>>0)|((l[29][1]>>>alpha))>>>0);
+	temp0 = (((l[29][1]<<(n-alpha))>>>0)|((l[29][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[29][1]);
+	if( (temp1+k[29][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[29][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^29;
+	temp1 = temp1>>>0;
+
+	l[32][0] = temp0;
+	l[32][1] = temp1;
+	l[32][0] = ( (l[32][0])>>>0);
+	l[32][1] = ( (l[32][1])>>>0);
+
+	t1 = ((k[29][0]<<beta)>>>0);
+	t2 = (k[29][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[29][0]<<beta)>>>0)|(k[29][1]>>>(n-beta)) );
+	temp4 = ( ((k[29][1]<<beta)>>>0)|(k[29][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[30][0] = temp3^temp0;
+	k[30][1] = temp4^temp1;
+	k[30][0] = ((k[30][0])>>>0);
+	k[30][1] = ((k[30][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[30][0]<<(n-alpha))>>>0)|((l[30][1]>>>alpha))>>>0);
+	temp0 = (((l[30][1]<<(n-alpha))>>>0)|((l[30][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[30][1]);
+	if( (temp1+k[30][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[30][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^30;
+	temp1 = temp1>>>0;
+
+	l[33][0] = temp0;
+	l[33][1] = temp1;
+	l[33][0] = ( (l[33][0])>>>0);
+	l[33][1] = ( (l[33][1])>>>0);
+
+	t1 = ((k[30][0]<<beta)>>>0);
+	t2 = (k[30][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[30][0]<<beta)>>>0)|(k[30][1]>>>(n-beta)) );
+	temp4 = ( ((k[30][1]<<beta)>>>0)|(k[30][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[31][0] = temp3^temp0;
+	k[31][1] = temp4^temp1;
+	k[31][0] = ((k[31][0])>>>0);
+	k[31][1] = ((k[31][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[31][0]<<(n-alpha))>>>0)|((l[31][1]>>>alpha))>>>0);
+	temp0 = (((l[31][1]<<(n-alpha))>>>0)|((l[31][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[31][1]);
+	if( (temp1+k[31][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[31][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^31;
+	temp1 = temp1>>>0;
+
+	l[34][0] = temp0;
+	l[34][1] = temp1;
+	l[34][0] = ( (l[34][0])>>>0);
+	l[34][1] = ( (l[34][1])>>>0);
+
+	t1 = ((k[31][0]<<beta)>>>0);
+	t2 = (k[31][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[31][0]<<beta)>>>0)|(k[31][1]>>>(n-beta)) );
+	temp4 = ( ((k[31][1]<<beta)>>>0)|(k[31][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[32][0] = temp3^temp0;
+	k[32][1] = temp4^temp1;
+	k[32][0] = ((k[32][0])>>>0);
+	k[32][1] = ((k[32][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[32][0]<<(n-alpha))>>>0)|((l[32][1]>>>alpha))>>>0);
+	temp0 = (((l[32][1]<<(n-alpha))>>>0)|((l[32][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[32][1]);
+	if( (temp1+k[32][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[32][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^32;
+	temp1 = temp1>>>0;
+
+	l[35][0] = temp0;
+	l[35][1] = temp1;
+	l[35][0] = ( (l[35][0])>>>0);
+	l[35][1] = ( (l[35][1])>>>0);
+
+	t1 = ((k[32][0]<<beta)>>>0);
+	t2 = (k[32][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[32][0]<<beta)>>>0)|(k[32][1]>>>(n-beta)) );
+	temp4 = ( ((k[32][1]<<beta)>>>0)|(k[32][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[33][0] = temp3^temp0;
+	k[33][1] = temp4^temp1;
+	k[33][0] = ((k[33][0])>>>0);
+	k[33][1] = ((k[33][1])>>>0);
+
+	carry = 0x0;
+	//ROR_alpha
+	temp1 = (((l[33][0]<<(n-alpha))>>>0)|((l[33][1]>>>alpha))>>>0);
+	temp0 = (((l[33][1]<<(n-alpha))>>>0)|((l[33][0]>>>alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	//Addition
+	t = (temp1+k[33][1]);
+	if( (temp1+k[33][1]) > 0xffffffff){
+		carry = 0x1;
+	}
+	temp1 = (t>>>0);
+
+	temp0 = (temp0+k[33][0])+carry;
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	temp1 = temp1^33;
+	temp1 = temp1>>>0;
+
+	l[36][0] = temp0;
+	l[36][1] = temp1;
+	l[36][0] = ( (l[36][0])>>>0);
+	l[36][1] = ( (l[36][1])>>>0);
+
+	t1 = ((k[33][0]<<beta)>>>0);
+	t2 = (k[33][1]>>>(n-beta));
+	t1 = t1>>>0;
+	t2 = t2>>>0;
+
+	//ROL_beta
+	temp3 = ( ((k[33][0]<<beta)>>>0)|(k[33][1]>>>(n-beta)) );
+	temp4 = ( ((k[33][1]<<beta)>>>0)|(k[33][0]>>>(n-beta)) );
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	//k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+	k[34][0] = temp3^temp0;
+	k[34][1] = temp4^temp1;
+	k[34][0] = ((k[34][0])>>>0);
+	k[34][1] = ((k[34][1])>>>0);
+
+
+}
+
+var encrypt64 = function(plaintext, k, ciphertext){
+	var x0 = plaintext[1][0];
+	var x1 = plaintext[1][1];
+	var y0 = plaintext[0][0];
+	var y1 = plaintext[0][1];
+
+	var temp0, temp0, temp2, temp3 = 0x0;
+	var i = 0;
+
+	var carry = 0x0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[0][1];
+	x0 = temp0^k[0][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[1][1];
+	x0 = temp0^k[1][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[2][1];
+	x0 = temp0^k[2][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[3][1];
+	x0 = temp0^k[3][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[4][1];
+	x0 = temp0^k[4][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[5][1];
+	x0 = temp0^k[5][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[6][1];
+	x0 = temp0^k[6][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[7][1];
+	x0 = temp0^k[7][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[8][1];
+	x0 = temp0^k[8][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[9][1];
+	x0 = temp0^k[9][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[10][1];
+	x0 = temp0^k[10][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[11][1];
+	x0 = temp0^k[11][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[12][1];
+	x0 = temp0^k[12][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[13][1];
+	x0 = temp0^k[13][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[14][1];
+	x0 = temp0^k[14][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[15][1];
+	x0 = temp0^k[15][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[16][1];
+	x0 = temp0^k[16][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[17][1];
+	x0 = temp0^k[17][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[18][1];
+	x0 = temp0^k[18][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[19][1];
+	x0 = temp0^k[19][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[20][1];
+	x0 = temp0^k[20][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[21][1];
+	x0 = temp0^k[21][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[22][1];
+	x0 = temp0^k[22][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[23][1];
+	x0 = temp0^k[23][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[24][1];
+	x0 = temp0^k[24][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[25][1];
+	x0 = temp0^k[25][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[26][1];
+	x0 = temp0^k[26][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[27][1];
+	x0 = temp0^k[27][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[28][1];
+	x0 = temp0^k[28][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[29][1];
+	x0 = temp0^k[29][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[30][1];
+	x0 = temp0^k[30][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[31][1];
+	x0 = temp0^k[31][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[32][1];
+	x0 = temp0^k[32][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+	temp1 = (((x0 << (n-alpha))>>>0)|((x1 >>> alpha))>>>0);
+	temp0 = (((x1 << (n-alpha))>>>0)|((x0 >>> alpha)>>>0));
+	temp1 = temp1>>>0;
+	temp0 = temp0>>>0;
+
+	carry = 0x0;
+	t = (temp1 + y1);
+	t = t>>>0;
+
+	if((temp1 + y1) > 0xffffffff){
+		carry = 0x1;
+	}
+
+	temp1 = t;
+	temp1 = temp1>>>0;
+	temp0 = (temp0 + y0+ carry);
+	temp0 = temp0>>>0;
+
+	x1 = temp1^k[33][1];
+	x0 = temp0^k[33][0];
+	x1 = x1>>>0;
+	x0 = x0>>>0;
+
+	temp3 = ( ((y0 <<beta)>>>0)| ((y1 >>>(n-beta))>>>0) );
+	temp4 = ( ((y1 <<beta)>>>0)| ((y0 >>>(n-beta))>>>0) );
+
+	temp3 = temp3>>>0;
+	temp4 = temp4>>>0;
+
+	y0 = temp3^x0;
+	y1 = temp4^x1;
+	y0 = y0>>>0;
+	y1 = y1>>>0;
+
+
+	
+	ciphertext[0][0] = y0;
+	ciphertext[0][1] = y1;
+	ciphertext[1][0] = x0;
+	ciphertext[1][1] = x1;
+}
+
+var decrypt64 = function(ciphertext, k, plaintext){
+	var x0 = ciphertext[1][0];
+	var x1 = ciphertext[1][1];
+	var y0 = ciphertext[0][0];
+	var y1 = ciphertext[0][1];
+
+	var temp0, temp1, temp2, temp3 = 0x0;
+	var i =0;
+	var borrow = 0x0;
+	
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[33][0]);
+	temp1 = (x1^k[33][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[32][0]);
+	temp1 = (x1^k[32][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[31][0]);
+	temp1 = (x1^k[31][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[30][0]);
+	temp1 = (x1^k[30][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[29][0]);
+	temp1 = (x1^k[29][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[28][0]);
+	temp1 = (x1^k[28][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[27][0]);
+	temp1 = (x1^k[27][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[26][0]);
+	temp1 = (x1^k[26][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[25][0]);
+	temp1 = (x1^k[25][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[24][0]);
+	temp1 = (x1^k[24][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[23][0]);
+	temp1 = (x1^k[23][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[22][0]);
+	temp1 = (x1^k[22][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[21][0]);
+	temp1 = (x1^k[21][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[20][0]);
+	temp1 = (x1^k[20][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[19][0]);
+	temp1 = (x1^k[19][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[18][0]);
+	temp1 = (x1^k[18][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[17][0]);
+	temp1 = (x1^k[17][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[16][0]);
+	temp1 = (x1^k[16][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[15][0]);
+	temp1 = (x1^k[15][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[14][0]);
+	temp1 = (x1^k[14][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[13][0]);
+	temp1 = (x1^k[13][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[12][0]);
+	temp1 = (x1^k[12][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[11][0]);
+	temp1 = (x1^k[11][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[10][0]);
+	temp1 = (x1^k[10][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[9][0]);
+	temp1 = (x1^k[9][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[8][0]);
+	temp1 = (x1^k[8][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[7][0]);
+	temp1 = (x1^k[7][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[6][0]);
+	temp1 = (x1^k[6][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[5][0]);
+	temp1 = (x1^k[5][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[4][0]);
+	temp1 = (x1^k[4][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[3][0]);
+	temp1 = (x1^k[3][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[2][0]);
+	temp1 = (x1^k[2][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[1][0]);
+	temp1 = (x1^k[1][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+	borrow = 0x0;
+	temp0 = x0^y0;
+	temp1 = x1^y1;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	y1 = (((temp0 << (n-beta))>>>0)|((temp1 >>> beta))>>>0);
+	y0 = (((temp1 << (n-beta))>>>0)|((temp0 >>> beta)>>>0));
+	y1 = y1>>>0;
+	y0 = y0>>>0;
+
+	temp0 = (x0^k[0][0]);
+	temp1 = (x1^k[0][1]);
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	t = temp1-y1;
+	if( (temp1 - y1) <0x0){
+		borrow = 0x1;
+	}
+	temp1 = t;
+	temp0 = temp0-y0-borrow;
+
+	temp0 = temp0>>>0;
+	temp1 = temp1>>>0;
+
+	x0 = ( ((temp0 <<alpha)>>>0)|(temp1 >>>(n-alpha)) );
+	x1 = ( ((temp1 <<alpha)>>>0)|(temp0 >>>(n-alpha)) );
+	x0 = x0>>>0;
+	x1 = x1>>>0;
+
+
+	plaintext[0][0] = y0;
+	plaintext[0][1] = y1;
+	plaintext[1][0] = x0;
+	plaintext[1][1] = x1;
+
+}
+
+
+var speck64 = function()
+{	
+	//speck 128/256
+	var key = new Array(38);
+	var l = new Array(38);
+	for(var i=0; i<38; i++){
+		key[i] = new Array(2);
+		key[i][0] = 0x0;
+		key[i][1] = 0x0;
+		l[i] = new Array(2);
+		l[i][0] = 0x0;
+		l[i][1] = 0x0;
+	}
+
+	key[0][0] = 0x07060504;
+	key[0][1] = 0x03020100;
+
+	l[0][0] = 0x0f0e0d0c;
+	l[0][1] = 0x0b0a0908;
+	l[1][0] = 0x17161514;
+	l[1][1] = 0x13121110;
+	l[2][0] = 0x1f1e1d1c;
+	l[2][1] = 0x1b1a1918;
+
+
+	var plaintext = new Array(2);
+	for(var i=0; i<2; i++){
+		plaintext[i] = new Array(2);
+	}
+
+	 plaintext[0][0] = 0x202e7265;
+     plaintext[0][1] = 0x6e6f6f70;
+     plaintext[1][0] = 0x65736f68;
+     plaintext[1][1] = 0x74206e49;
+
+
+	var ciphertext = new Array(2);
+	for(var i=0; i<2; i++){
+		ciphertext[i] = new Array(2);
+		ciphertext[i][0] = 0x0;
+		ciphertext[i][1] = 0x0;
+	}
+
+	
+	keyexpansion64(key, l);
+	
+	encrypt64(plaintext, key, ciphertext);
+	
+
+
+	document.write('ciphertext[0][0] : 0x', ciphertext[0][0].toString(16)+ciphertext[0][1].toString(16)+'<br />');
+	document.write('ciphertext[1][0] : 0x', ciphertext[1][0].toString(16)+ciphertext[1][1].toString(16)+'<br />');
+	
+
+	decrypt64(ciphertext, key, plaintext);
+
+	document.write('plaintext[0][0] : 0x', plaintext[0][0].toString(16)+plaintext[0][1].toString(16)+'<br />');
+	document.write('plaintext[1][0] : 0x', plaintext[1][0].toString(16)+plaintext[1][1].toString(16)+'<br /><br />');
+
+
+
+	 //Time Calculation		
+		document.write('Speck 128/256' + '<br />');
+		var Hz2 = 1.60*1073741824;
+		var Bytes = 16;
+		var Bytes2 = 32;
+
+		var size_test=10000;
+		var cnt_time;
+		var key_cpb = 0.0;
+		var enc_cpb = 0.0;
+		var dec_cpb = 0.0;
+		var idx = 0;
+
+		while(idx<10){
+			var d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					keyexpansion64(key, l);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			var ms = (n2-n)/size_test;
+			var s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes2;
+			if(cpb>0){
+				key_cpb += cpb;
+				idx++;
+			}
+		}
+		idx = 0;
+		key_cpb /= 10;
+		console.log("keyexpansion time: "+ms+"ms");
+		console.log("keyexpansion time: "+s+"s");
+		console.log("cpb: "+ key_cpb);
+
+		document.write('keyexpansion time: ',ms+'ms'+ '<br />');
+		document.write('keyexpansion time: ',s+'s'+ '<br />');
+		document.write('cpb: ',key_cpb+ '<br />');
+
+		while(idx<10){
+			d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					encrypt64(plaintext, key, ciphertext);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			ms = (n2-n)/size_test;
+			s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes;
+			if(cpb>0){
+				enc_cpb += cpb;
+				idx++;
+			}
+		}
+		enc_cpb /= 10;
+		idx = 0;
+		console.log("encryption time: "+ms+"ms");
+		console.log("encryption time: "+s+"s");
+		console.log("cpb: "+ enc_cpb);
+
+		document.write('encryption time: ',ms+'ms'+ '<br />');
+		document.write('encryption time: ',s+'s'+ '<br />');
+		document.write('cpb: ',enc_cpb+ '<br />');
+
+		while(idx<10){
+			d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					decrypt64(ciphertext, key, plaintext);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			ms = (n2-n)/size_test;
+			s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes;
+			if(cpb>0){
+				dec_cpb += cpb;
+				idx++;
+			}
+		}
+		dec_cpb /= 10;
+		idx = 0;
+		console.log("decryption time: "+(n2-n)/size_test+"ms");
+		console.log("decryption time: "+s+"s");
+		console.log("cpb: "+ dec_cpb);
+       
+	   document.write('decryption time: ',ms+'ms'+ '<br />');
+	   document.write('decryption time: ',s+'s'+ '<br />');
+	   document.write('cpb: ',dec_cpb+ '<br />');
+}
+
+    //-->
+</script>
+<p>Click the following to see the result:</p> <form> <input type="button" value="Click Me" onclick="speck64();" /> </form>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script language="javascript" type="text/javascript">
+    <!--
+
+//speck64/96
+var m = 3;
+var n = 32;
+var T = 26;
+var alpha = 8;
+var beta = 3;
+
+
+var ROR_alpha = function(x){
+	return (x>>>alpha)|((x<<(n-alpha)>>>0));//%0x10000;
+}
+
+var ROR_beta = function(x){
+	return (x>>beta)|(x<<(n-beta));//%0x10000;
+}
+
+var ROL_alpha = function(x){
+	return (x<<alpha)|(x>>(n-alpha));//%0x10000;
+}
+
+var ROL_beta = function(x){
+	return ((x<<beta)>>>0)|(x>>>(n-beta));//%0x10000;
+}
+
+
+/* ===================================*/
+var ROR_alpha_1 = function(x){
+	return (x>>>alpha)|((x<<(n-alpha)>>>0));
+}
+
+var ROR_beta_1 = function(x){
+	return (x>>>beta)|((x<<(n-beta))>>>0);
+}
+
+var ROL_alpha_1 = function(x){
+	return (x<<alpha)|(x>>>(n-alpha));
+}
+
+var ROL_beta_1 = function(x){
+	return ((x<<beta)>>>0)|(x>>>(n-beta));
+}
+
+var keyexpansion32 = function(k, l)
+{
+	var i = 0;
+	for(i=0; i<T; i++){
+		
+		l[i+m-1] = ((k[i] + ROR_alpha(l[i])))^i;
+		l[i+m-1] = l[i+m-1]>>>0;
+
+		
+
+		k[i+1] = (ROL_beta(k[i])^l[i+m-1]);
+		k[i+1] = k[i+1]>>>0;
+
+	
+
+	}
+}
+
+var encrypt32 = function(plaintext, k, ciphertext){
+	var x = plaintext[1];
+	var y = plaintext[0];
+	var i = 0;
+
+	for(i=0; i<T; i++){
+		x = (((ROR_alpha(x) + y))^k[i]);
+		x = x>>>0;
+		y = ( ROL_beta(y)^x);
+		y = y>>>0;
+	}
+	ciphertext[0] = y;
+	ciphertext[1] = x;
+	ciphertext[0] = ciphertext[0]>>>0;
+	ciphertext[1] = ciphertext[1]>>>0;
+}
+
+
+var decrypt32 = function(ciphertext, k, plaintext){
+	var x = ciphertext[1];
+	var y = ciphertext[0];
+	var temp = 0x0;
+	var i =0;
+	
+	for(i=T-1; i>=0; i--){		
+		temp = x^y;
+		temp = temp>>>0;
+		y = ROR_beta_1(temp);
+		y = y>>>0;		
+
+		var temp1 = ((x^k[i]) - y);
+		temp1 = temp1>>>0;
+		
+
+		x = ROL_alpha_1(temp1);//Decryption result
+		x = x>>>0;
+		       	
+
+		if(i == 0){
+			break;
+		}
+	}
+	plaintext[0] = y;
+	plaintext[1] = x;
+	plaintext[0] = plaintext[0]>>>0;
+	plaintext[1] = plaintext[1]>>>0;
+	
+	/*
+	document.write('plaintext[0] : 0x', plaintext[0].toString(16)+'<br />');
+	document.write('plaintext[0] : ', plaintext[0]+'<br />');
+	document.write('plaintext[1] : 0x', plaintext[1].toString(16)+'<br />');
+	document.write('plaintext[1] : ', plaintext[1]+'<br />');
+*/
+}
+
+
+var speck64 = function()
+{	
+	var key = new Array(29);
+	var l = new Array(29);
+	var plaintext =[0x736e6165, 0x74614620];
+	var plaintext2 = [0x0, 0x0];
+	var ciphertext = [0x4175946c, 0x9f7952ec];
+	var ciphertext2 = [0x0, 0x0];
+	var i = 0;
+
+	for(i=0; i<29; i++){
+		key[i] = 0x0;
+		l[i] = 0x0;
+	}
+	key[0] = 0x03020100;
+	l[0] = 0x0b0a0908;
+	l[1] = 0x13121110;
+	
+	keyexpansion32(key, l);
+	
+	encrypt32(plaintext, key, ciphertext2);
+	
+
+
+	document.write('ciphertext[0] : 0x', ciphertext2[0].toString(16)+'<br />');
+	document.write('ciphertext[0] : ', ciphertext2[0]+'<br />');
+	document.write('ciphertext[1] : 0x', ciphertext2[1].toString(16)+'<br />');
+	document.write('ciphertext[1] : ', ciphertext2[1]+'<br />');
+
+	decrypt32(ciphertext2, key, plaintext2);
+
+	document.write('plaintext2[0] : 0x', plaintext2[0].toString(16)+'<br />');
+	document.write('plaintext2[0] : ', plaintext2[0]+'<br />');
+	document.write('plaintext2[1] : 0x', plaintext2[1].toString(16)+'<br />');
+	document.write('plaintext2[1] : ', plaintext2[1]+'<br />');
+
+
+
+	 //Time Calculation		
+		document.write('Speck 64/96' + '<br />');
+		var Hz2 = 2.30*1073741824; //3.40*1073741824;
+		var Bytes = 8;
+		var Bytes2 = 12;
+
+		var size_test=100;
+		var cnt_time;
+		var key_cpb = 0.0;
+		var enc_cpb = 0.0;
+		var dec_cpb = 0.0;
+		var idx = 0;
+
+		while(idx<10){
+			var d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					keyexpansion32(key, l);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			var ms = (n2-n)/size_test;
+			var s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes2;
+			if(cpb>0){
+				key_cpb += cpb;
+				idx++;
+			}
+		}
+		idx = 0;
+		key_cpb /= 10;
+		console.log("keyexpansion time: "+ms+"ms");
+		console.log("keyexpansion time: "+s+"s");
+		console.log("cpb: "+ key_cpb);
+
+		document.write('keyexpansion time: ',ms+'ms'+ '<br />');
+		document.write('keyexpansion time: ',s+'s'+ '<br />');
+		document.write('cpb: ',key_cpb+ '<br />');
+
+		while(idx<10){
+			d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					encrypt32(plaintext, key, ciphertext2);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			ms = (n2-n)/size_test;
+			s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes;
+			if(cpb>0){
+				enc_cpb += cpb;
+				idx++;
+			}
+		}
+		enc_cpb /= 10;
+		idx = 0;
+		console.log("encryption time: "+ms+"ms");
+		console.log("encryption time: "+s+"s");
+		console.log("cpb: "+ enc_cpb);
+
+		document.write('encryption time: ',ms+'ms'+ '<br />');
+		document.write('encryption time: ',s+'s'+ '<br />');
+		document.write('cpb: ',enc_cpb+ '<br />');
+
+		
+		while(idx<10){
+			d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					decrypt32(ciphertext2, key, plaintext2);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			ms = (n2-n)/size_test;
+			s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes;
+			if(cpb>0){
+				dec_cpb += cpb;
+				idx++;
+			}
+		}
+		dec_cpb /= 10;
+		idx = 0;
+		console.log("decryption time: "+(n2-n)/size_test+"ms");
+		console.log("decryption time: "+s+"s");
+		console.log("cpb: "+ dec_cpb);
+       
+	   document.write('decryption time: ',ms+'ms'+ '<br />');
+	   document.write('decryption time: ',s+'s'+ '<br />');
+	   document.write('cpb: ',dec_cpb+ '<br />');
+}
+
+    //-->
+</script>
+<p>Click the following to see the result:</p> <form> <input type="button" value="Click Me" onclick="speck64();" /> </form>
+</body>
+</html>

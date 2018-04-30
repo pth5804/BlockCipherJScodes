@@ -1,0 +1,3502 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script language="javascript" type="text/javascript">
+    <!--
+
+    //simon 128/192
+ var n = 32;//64;
+ var m = 3;
+ var T = 69;
+ var j = 3;
+ var z = [
+        [1,1,1,1,1,0,1,0,0,0,1,0,0,1,0,1,0,1,1,0,0,0,0,1,1,1,0,0,1,1,0,1,1,1,1,1,0,1,0,0,0,1,0,0,1,0,1,0,1,1,0,0,0,0,1,1,1,0,0,1,1,0],
+        [1,0,0,0,1,1,1,0,1,1,1,1,1,0,0,1,0,0,1,1,0,0,0,0,1,0,1,1,0,1,0,1,0,0,0,1,1,1,0,1,1,1,1,1,0,0,1,0,0,1,1,0,0,0,0,1,0,1,1,0,1,0],
+        [1,0,1,0,1,1,1,1,0,1,1,1,0,0,0,0,0,0,1,1,0,1,0,0,1,0,0,1,1,0,0,0,1,0,1,0,0,0,0,1,0,0,0,1,1,1,1,1,1,0,0,1,0,1,1,0,1,1,0,0,1,1],
+        [1,1,0,1,1,0,1,1,1,0,1,0,1,1,0,0,0,1,1,0,0,1,0,1,1,1,1,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,1,0,0,1,1,1,0,0,1,1,0,1,0,0,0,0,1,1,1,1],
+        [1,1,0,1,0,0,0,1,1,1,1,0,0,1,1,0,1,0,1,1,0,1,1,0,0,0,1,0,0,0,0,0,0,1,0,1,1,1,0,0,0,0,1,1,0,0,1,0,1,0,0,1,0,0,1,1,1,0,1,1,1,1]
+    ];
+
+var notOperation64 = function(x){
+        return (0xFFFFFFFF ^ x);
+    }
+
+
+var keyexpansion64 = function(k)
+{
+        var c1 = 0xffffffff;
+        var c2 = 0xfffffffc;
+        var tmp1, tmp2, tmp3, tmp4 = 0;
+        var t1, t2 = 0;
+        
+
+        //Round# 3
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[2][1]<<(n-3))>>>0)|((k[2][0]>>>3))>>>0);
+		tmp2 = (((k[2][0]<<(n-3))>>>0)|((k[2][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[0][0]);
+		t2 = notOperation64(k[0][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[3][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][0]) ^ 3);
+		k[3][1] = (((t2 ^ tmp2) ^ z[3][0]) ^ 3);
+
+		//Round# 4
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[3][1]<<(n-3))>>>0)|((k[3][0]>>>3))>>>0);
+		tmp2 = (((k[3][0]<<(n-3))>>>0)|((k[3][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[1][0]);
+		t2 = notOperation64(k[1][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[4][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][1]) ^ 3);
+		k[4][1] = (((t2 ^ tmp2) ^ z[3][1]) ^ 3);
+
+		//Round# 5
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[4][1]<<(n-3))>>>0)|((k[4][0]>>>3))>>>0);
+		tmp2 = (((k[4][0]<<(n-3))>>>0)|((k[4][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[2][0]);
+		t2 = notOperation64(k[2][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[5][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][2]) ^ 3);
+		k[5][1] = (((t2 ^ tmp2) ^ z[3][2]) ^ 3);
+
+		//Round# 6
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[5][1]<<(n-3))>>>0)|((k[5][0]>>>3))>>>0);
+		tmp2 = (((k[5][0]<<(n-3))>>>0)|((k[5][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[3][0]);
+		t2 = notOperation64(k[3][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[6][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][3]) ^ 3);
+		k[6][1] = (((t2 ^ tmp2) ^ z[3][3]) ^ 3);
+
+		//Round# 7
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[6][1]<<(n-3))>>>0)|((k[6][0]>>>3))>>>0);
+		tmp2 = (((k[6][0]<<(n-3))>>>0)|((k[6][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[4][0]);
+		t2 = notOperation64(k[4][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[7][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][4]) ^ 3);
+		k[7][1] = (((t2 ^ tmp2) ^ z[3][4]) ^ 3);
+
+		//Round# 8
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[7][1]<<(n-3))>>>0)|((k[7][0]>>>3))>>>0);
+		tmp2 = (((k[7][0]<<(n-3))>>>0)|((k[7][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[5][0]);
+		t2 = notOperation64(k[5][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[8][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][5]) ^ 3);
+		k[8][1] = (((t2 ^ tmp2) ^ z[3][5]) ^ 3);
+
+		//Round# 9
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[8][1]<<(n-3))>>>0)|((k[8][0]>>>3))>>>0);
+		tmp2 = (((k[8][0]<<(n-3))>>>0)|((k[8][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[6][0]);
+		t2 = notOperation64(k[6][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[9][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][6]) ^ 3);
+		k[9][1] = (((t2 ^ tmp2) ^ z[3][6]) ^ 3);
+
+		//Round# 10
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[9][1]<<(n-3))>>>0)|((k[9][0]>>>3))>>>0);
+		tmp2 = (((k[9][0]<<(n-3))>>>0)|((k[9][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[7][0]);
+		t2 = notOperation64(k[7][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[10][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][7]) ^ 3);
+		k[10][1] = (((t2 ^ tmp2) ^ z[3][7]) ^ 3);
+
+		//Round# 11
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[10][1]<<(n-3))>>>0)|((k[10][0]>>>3))>>>0);
+		tmp2 = (((k[10][0]<<(n-3))>>>0)|((k[10][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[8][0]);
+		t2 = notOperation64(k[8][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[11][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][8]) ^ 3);
+		k[11][1] = (((t2 ^ tmp2) ^ z[3][8]) ^ 3);
+
+		//Round# 12
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[11][1]<<(n-3))>>>0)|((k[11][0]>>>3))>>>0);
+		tmp2 = (((k[11][0]<<(n-3))>>>0)|((k[11][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[9][0]);
+		t2 = notOperation64(k[9][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[12][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][9]) ^ 3);
+		k[12][1] = (((t2 ^ tmp2) ^ z[3][9]) ^ 3);
+
+		//Round# 13
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[12][1]<<(n-3))>>>0)|((k[12][0]>>>3))>>>0);
+		tmp2 = (((k[12][0]<<(n-3))>>>0)|((k[12][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[10][0]);
+		t2 = notOperation64(k[10][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[13][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][10]) ^ 3);
+		k[13][1] = (((t2 ^ tmp2) ^ z[3][10]) ^ 3);
+
+		//Round# 14
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[13][1]<<(n-3))>>>0)|((k[13][0]>>>3))>>>0);
+		tmp2 = (((k[13][0]<<(n-3))>>>0)|((k[13][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[11][0]);
+		t2 = notOperation64(k[11][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[14][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][11]) ^ 3);
+		k[14][1] = (((t2 ^ tmp2) ^ z[3][11]) ^ 3);
+
+		//Round# 15
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[14][1]<<(n-3))>>>0)|((k[14][0]>>>3))>>>0);
+		tmp2 = (((k[14][0]<<(n-3))>>>0)|((k[14][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[12][0]);
+		t2 = notOperation64(k[12][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[15][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][12]) ^ 3);
+		k[15][1] = (((t2 ^ tmp2) ^ z[3][12]) ^ 3);
+
+		//Round# 16
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[15][1]<<(n-3))>>>0)|((k[15][0]>>>3))>>>0);
+		tmp2 = (((k[15][0]<<(n-3))>>>0)|((k[15][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[13][0]);
+		t2 = notOperation64(k[13][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[16][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][13]) ^ 3);
+		k[16][1] = (((t2 ^ tmp2) ^ z[3][13]) ^ 3);
+
+		//Round# 17
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[16][1]<<(n-3))>>>0)|((k[16][0]>>>3))>>>0);
+		tmp2 = (((k[16][0]<<(n-3))>>>0)|((k[16][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[14][0]);
+		t2 = notOperation64(k[14][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[17][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][14]) ^ 3);
+		k[17][1] = (((t2 ^ tmp2) ^ z[3][14]) ^ 3);
+
+		//Round# 18
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[17][1]<<(n-3))>>>0)|((k[17][0]>>>3))>>>0);
+		tmp2 = (((k[17][0]<<(n-3))>>>0)|((k[17][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[15][0]);
+		t2 = notOperation64(k[15][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[18][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][15]) ^ 3);
+		k[18][1] = (((t2 ^ tmp2) ^ z[3][15]) ^ 3);
+
+		//Round# 19
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[18][1]<<(n-3))>>>0)|((k[18][0]>>>3))>>>0);
+		tmp2 = (((k[18][0]<<(n-3))>>>0)|((k[18][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[16][0]);
+		t2 = notOperation64(k[16][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[19][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][16]) ^ 3);
+		k[19][1] = (((t2 ^ tmp2) ^ z[3][16]) ^ 3);
+
+		//Round# 20
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[19][1]<<(n-3))>>>0)|((k[19][0]>>>3))>>>0);
+		tmp2 = (((k[19][0]<<(n-3))>>>0)|((k[19][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[17][0]);
+		t2 = notOperation64(k[17][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[20][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][17]) ^ 3);
+		k[20][1] = (((t2 ^ tmp2) ^ z[3][17]) ^ 3);
+
+		//Round# 21
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[20][1]<<(n-3))>>>0)|((k[20][0]>>>3))>>>0);
+		tmp2 = (((k[20][0]<<(n-3))>>>0)|((k[20][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[18][0]);
+		t2 = notOperation64(k[18][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[21][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][18]) ^ 3);
+		k[21][1] = (((t2 ^ tmp2) ^ z[3][18]) ^ 3);
+
+		//Round# 22
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[21][1]<<(n-3))>>>0)|((k[21][0]>>>3))>>>0);
+		tmp2 = (((k[21][0]<<(n-3))>>>0)|((k[21][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[19][0]);
+		t2 = notOperation64(k[19][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[22][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][19]) ^ 3);
+		k[22][1] = (((t2 ^ tmp2) ^ z[3][19]) ^ 3);
+
+		//Round# 23
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[22][1]<<(n-3))>>>0)|((k[22][0]>>>3))>>>0);
+		tmp2 = (((k[22][0]<<(n-3))>>>0)|((k[22][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[20][0]);
+		t2 = notOperation64(k[20][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[23][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][20]) ^ 3);
+		k[23][1] = (((t2 ^ tmp2) ^ z[3][20]) ^ 3);
+
+		//Round# 24
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[23][1]<<(n-3))>>>0)|((k[23][0]>>>3))>>>0);
+		tmp2 = (((k[23][0]<<(n-3))>>>0)|((k[23][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[21][0]);
+		t2 = notOperation64(k[21][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[24][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][21]) ^ 3);
+		k[24][1] = (((t2 ^ tmp2) ^ z[3][21]) ^ 3);
+
+		//Round# 25
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[24][1]<<(n-3))>>>0)|((k[24][0]>>>3))>>>0);
+		tmp2 = (((k[24][0]<<(n-3))>>>0)|((k[24][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[22][0]);
+		t2 = notOperation64(k[22][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[25][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][22]) ^ 3);
+		k[25][1] = (((t2 ^ tmp2) ^ z[3][22]) ^ 3);
+
+		//Round# 26
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[25][1]<<(n-3))>>>0)|((k[25][0]>>>3))>>>0);
+		tmp2 = (((k[25][0]<<(n-3))>>>0)|((k[25][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[23][0]);
+		t2 = notOperation64(k[23][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[26][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][23]) ^ 3);
+		k[26][1] = (((t2 ^ tmp2) ^ z[3][23]) ^ 3);
+
+		//Round# 27
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[26][1]<<(n-3))>>>0)|((k[26][0]>>>3))>>>0);
+		tmp2 = (((k[26][0]<<(n-3))>>>0)|((k[26][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[24][0]);
+		t2 = notOperation64(k[24][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[27][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][24]) ^ 3);
+		k[27][1] = (((t2 ^ tmp2) ^ z[3][24]) ^ 3);
+
+		//Round# 28
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[27][1]<<(n-3))>>>0)|((k[27][0]>>>3))>>>0);
+		tmp2 = (((k[27][0]<<(n-3))>>>0)|((k[27][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[25][0]);
+		t2 = notOperation64(k[25][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[28][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][25]) ^ 3);
+		k[28][1] = (((t2 ^ tmp2) ^ z[3][25]) ^ 3);
+
+		//Round# 29
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[28][1]<<(n-3))>>>0)|((k[28][0]>>>3))>>>0);
+		tmp2 = (((k[28][0]<<(n-3))>>>0)|((k[28][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[26][0]);
+		t2 = notOperation64(k[26][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[29][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][26]) ^ 3);
+		k[29][1] = (((t2 ^ tmp2) ^ z[3][26]) ^ 3);
+
+		//Round# 30
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[29][1]<<(n-3))>>>0)|((k[29][0]>>>3))>>>0);
+		tmp2 = (((k[29][0]<<(n-3))>>>0)|((k[29][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[27][0]);
+		t2 = notOperation64(k[27][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[30][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][27]) ^ 3);
+		k[30][1] = (((t2 ^ tmp2) ^ z[3][27]) ^ 3);
+
+		//Round# 31
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[30][1]<<(n-3))>>>0)|((k[30][0]>>>3))>>>0);
+		tmp2 = (((k[30][0]<<(n-3))>>>0)|((k[30][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[28][0]);
+		t2 = notOperation64(k[28][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[31][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][28]) ^ 3);
+		k[31][1] = (((t2 ^ tmp2) ^ z[3][28]) ^ 3);
+
+		//Round# 32
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[31][1]<<(n-3))>>>0)|((k[31][0]>>>3))>>>0);
+		tmp2 = (((k[31][0]<<(n-3))>>>0)|((k[31][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[29][0]);
+		t2 = notOperation64(k[29][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[32][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][29]) ^ 3);
+		k[32][1] = (((t2 ^ tmp2) ^ z[3][29]) ^ 3);
+
+		//Round# 33
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[32][1]<<(n-3))>>>0)|((k[32][0]>>>3))>>>0);
+		tmp2 = (((k[32][0]<<(n-3))>>>0)|((k[32][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[30][0]);
+		t2 = notOperation64(k[30][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[33][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][30]) ^ 3);
+		k[33][1] = (((t2 ^ tmp2) ^ z[3][30]) ^ 3);
+
+		//Round# 34
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[33][1]<<(n-3))>>>0)|((k[33][0]>>>3))>>>0);
+		tmp2 = (((k[33][0]<<(n-3))>>>0)|((k[33][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[31][0]);
+		t2 = notOperation64(k[31][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[34][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][31]) ^ 3);
+		k[34][1] = (((t2 ^ tmp2) ^ z[3][31]) ^ 3);
+
+		//Round# 35
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[34][1]<<(n-3))>>>0)|((k[34][0]>>>3))>>>0);
+		tmp2 = (((k[34][0]<<(n-3))>>>0)|((k[34][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[32][0]);
+		t2 = notOperation64(k[32][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[35][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][32]) ^ 3);
+		k[35][1] = (((t2 ^ tmp2) ^ z[3][32]) ^ 3);
+
+		//Round# 36
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[35][1]<<(n-3))>>>0)|((k[35][0]>>>3))>>>0);
+		tmp2 = (((k[35][0]<<(n-3))>>>0)|((k[35][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[33][0]);
+		t2 = notOperation64(k[33][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[36][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][33]) ^ 3);
+		k[36][1] = (((t2 ^ tmp2) ^ z[3][33]) ^ 3);
+
+		//Round# 37
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[36][1]<<(n-3))>>>0)|((k[36][0]>>>3))>>>0);
+		tmp2 = (((k[36][0]<<(n-3))>>>0)|((k[36][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[34][0]);
+		t2 = notOperation64(k[34][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[37][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][34]) ^ 3);
+		k[37][1] = (((t2 ^ tmp2) ^ z[3][34]) ^ 3);
+
+		//Round# 38
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[37][1]<<(n-3))>>>0)|((k[37][0]>>>3))>>>0);
+		tmp2 = (((k[37][0]<<(n-3))>>>0)|((k[37][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[35][0]);
+		t2 = notOperation64(k[35][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[38][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][35]) ^ 3);
+		k[38][1] = (((t2 ^ tmp2) ^ z[3][35]) ^ 3);
+
+		//Round# 39
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[38][1]<<(n-3))>>>0)|((k[38][0]>>>3))>>>0);
+		tmp2 = (((k[38][0]<<(n-3))>>>0)|((k[38][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[36][0]);
+		t2 = notOperation64(k[36][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[39][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][36]) ^ 3);
+		k[39][1] = (((t2 ^ tmp2) ^ z[3][36]) ^ 3);
+
+		//Round# 40
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[39][1]<<(n-3))>>>0)|((k[39][0]>>>3))>>>0);
+		tmp2 = (((k[39][0]<<(n-3))>>>0)|((k[39][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[37][0]);
+		t2 = notOperation64(k[37][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[40][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][37]) ^ 3);
+		k[40][1] = (((t2 ^ tmp2) ^ z[3][37]) ^ 3);
+
+		//Round# 41
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[40][1]<<(n-3))>>>0)|((k[40][0]>>>3))>>>0);
+		tmp2 = (((k[40][0]<<(n-3))>>>0)|((k[40][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[38][0]);
+		t2 = notOperation64(k[38][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[41][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][38]) ^ 3);
+		k[41][1] = (((t2 ^ tmp2) ^ z[3][38]) ^ 3);
+
+		//Round# 42
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[41][1]<<(n-3))>>>0)|((k[41][0]>>>3))>>>0);
+		tmp2 = (((k[41][0]<<(n-3))>>>0)|((k[41][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[39][0]);
+		t2 = notOperation64(k[39][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[42][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][39]) ^ 3);
+		k[42][1] = (((t2 ^ tmp2) ^ z[3][39]) ^ 3);
+
+		//Round# 43
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[42][1]<<(n-3))>>>0)|((k[42][0]>>>3))>>>0);
+		tmp2 = (((k[42][0]<<(n-3))>>>0)|((k[42][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[40][0]);
+		t2 = notOperation64(k[40][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[43][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][40]) ^ 3);
+		k[43][1] = (((t2 ^ tmp2) ^ z[3][40]) ^ 3);
+
+		//Round# 44
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[43][1]<<(n-3))>>>0)|((k[43][0]>>>3))>>>0);
+		tmp2 = (((k[43][0]<<(n-3))>>>0)|((k[43][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[41][0]);
+		t2 = notOperation64(k[41][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[44][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][41]) ^ 3);
+		k[44][1] = (((t2 ^ tmp2) ^ z[3][41]) ^ 3);
+
+		//Round# 45
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[44][1]<<(n-3))>>>0)|((k[44][0]>>>3))>>>0);
+		tmp2 = (((k[44][0]<<(n-3))>>>0)|((k[44][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[42][0]);
+		t2 = notOperation64(k[42][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[45][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][42]) ^ 3);
+		k[45][1] = (((t2 ^ tmp2) ^ z[3][42]) ^ 3);
+
+		//Round# 46
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[45][1]<<(n-3))>>>0)|((k[45][0]>>>3))>>>0);
+		tmp2 = (((k[45][0]<<(n-3))>>>0)|((k[45][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[43][0]);
+		t2 = notOperation64(k[43][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[46][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][43]) ^ 3);
+		k[46][1] = (((t2 ^ tmp2) ^ z[3][43]) ^ 3);
+
+		//Round# 47
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[46][1]<<(n-3))>>>0)|((k[46][0]>>>3))>>>0);
+		tmp2 = (((k[46][0]<<(n-3))>>>0)|((k[46][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[44][0]);
+		t2 = notOperation64(k[44][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[47][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][44]) ^ 3);
+		k[47][1] = (((t2 ^ tmp2) ^ z[3][44]) ^ 3);
+
+		//Round# 48
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[47][1]<<(n-3))>>>0)|((k[47][0]>>>3))>>>0);
+		tmp2 = (((k[47][0]<<(n-3))>>>0)|((k[47][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[45][0]);
+		t2 = notOperation64(k[45][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[48][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][45]) ^ 3);
+		k[48][1] = (((t2 ^ tmp2) ^ z[3][45]) ^ 3);
+
+		//Round# 49
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[48][1]<<(n-3))>>>0)|((k[48][0]>>>3))>>>0);
+		tmp2 = (((k[48][0]<<(n-3))>>>0)|((k[48][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[46][0]);
+		t2 = notOperation64(k[46][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[49][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][46]) ^ 3);
+		k[49][1] = (((t2 ^ tmp2) ^ z[3][46]) ^ 3);
+
+		//Round# 50
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[49][1]<<(n-3))>>>0)|((k[49][0]>>>3))>>>0);
+		tmp2 = (((k[49][0]<<(n-3))>>>0)|((k[49][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[47][0]);
+		t2 = notOperation64(k[47][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[50][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][47]) ^ 3);
+		k[50][1] = (((t2 ^ tmp2) ^ z[3][47]) ^ 3);
+
+		//Round# 51
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[50][1]<<(n-3))>>>0)|((k[50][0]>>>3))>>>0);
+		tmp2 = (((k[50][0]<<(n-3))>>>0)|((k[50][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[48][0]);
+		t2 = notOperation64(k[48][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[51][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][48]) ^ 3);
+		k[51][1] = (((t2 ^ tmp2) ^ z[3][48]) ^ 3);
+
+		//Round# 52
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[51][1]<<(n-3))>>>0)|((k[51][0]>>>3))>>>0);
+		tmp2 = (((k[51][0]<<(n-3))>>>0)|((k[51][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[49][0]);
+		t2 = notOperation64(k[49][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[52][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][49]) ^ 3);
+		k[52][1] = (((t2 ^ tmp2) ^ z[3][49]) ^ 3);
+
+		//Round# 53
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[52][1]<<(n-3))>>>0)|((k[52][0]>>>3))>>>0);
+		tmp2 = (((k[52][0]<<(n-3))>>>0)|((k[52][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[50][0]);
+		t2 = notOperation64(k[50][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[53][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][50]) ^ 3);
+		k[53][1] = (((t2 ^ tmp2) ^ z[3][50]) ^ 3);
+
+		//Round# 54
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[53][1]<<(n-3))>>>0)|((k[53][0]>>>3))>>>0);
+		tmp2 = (((k[53][0]<<(n-3))>>>0)|((k[53][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[51][0]);
+		t2 = notOperation64(k[51][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[54][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][51]) ^ 3);
+		k[54][1] = (((t2 ^ tmp2) ^ z[3][51]) ^ 3);
+
+		//Round# 55
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[54][1]<<(n-3))>>>0)|((k[54][0]>>>3))>>>0);
+		tmp2 = (((k[54][0]<<(n-3))>>>0)|((k[54][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[52][0]);
+		t2 = notOperation64(k[52][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[55][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][52]) ^ 3);
+		k[55][1] = (((t2 ^ tmp2) ^ z[3][52]) ^ 3);
+
+		//Round# 56
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[55][1]<<(n-3))>>>0)|((k[55][0]>>>3))>>>0);
+		tmp2 = (((k[55][0]<<(n-3))>>>0)|((k[55][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[53][0]);
+		t2 = notOperation64(k[53][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[56][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][53]) ^ 3);
+		k[56][1] = (((t2 ^ tmp2) ^ z[3][53]) ^ 3);
+
+		//Round# 57
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[56][1]<<(n-3))>>>0)|((k[56][0]>>>3))>>>0);
+		tmp2 = (((k[56][0]<<(n-3))>>>0)|((k[56][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[54][0]);
+		t2 = notOperation64(k[54][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[57][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][54]) ^ 3);
+		k[57][1] = (((t2 ^ tmp2) ^ z[3][54]) ^ 3);
+
+		//Round# 58
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[57][1]<<(n-3))>>>0)|((k[57][0]>>>3))>>>0);
+		tmp2 = (((k[57][0]<<(n-3))>>>0)|((k[57][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[55][0]);
+		t2 = notOperation64(k[55][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[58][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][55]) ^ 3);
+		k[58][1] = (((t2 ^ tmp2) ^ z[3][55]) ^ 3);
+
+		//Round# 59
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[58][1]<<(n-3))>>>0)|((k[58][0]>>>3))>>>0);
+		tmp2 = (((k[58][0]<<(n-3))>>>0)|((k[58][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[56][0]);
+		t2 = notOperation64(k[56][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[59][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][56]) ^ 3);
+		k[59][1] = (((t2 ^ tmp2) ^ z[3][56]) ^ 3);
+
+		//Round# 60
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[59][1]<<(n-3))>>>0)|((k[59][0]>>>3))>>>0);
+		tmp2 = (((k[59][0]<<(n-3))>>>0)|((k[59][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[57][0]);
+		t2 = notOperation64(k[57][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[60][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][57]) ^ 3);
+		k[60][1] = (((t2 ^ tmp2) ^ z[3][57]) ^ 3);
+
+		//Round# 61
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[60][1]<<(n-3))>>>0)|((k[60][0]>>>3))>>>0);
+		tmp2 = (((k[60][0]<<(n-3))>>>0)|((k[60][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[58][0]);
+		t2 = notOperation64(k[58][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[61][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][58]) ^ 3);
+		k[61][1] = (((t2 ^ tmp2) ^ z[3][58]) ^ 3);
+
+		//Round# 62
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[61][1]<<(n-3))>>>0)|((k[61][0]>>>3))>>>0);
+		tmp2 = (((k[61][0]<<(n-3))>>>0)|((k[61][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[59][0]);
+		t2 = notOperation64(k[59][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[62][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][59]) ^ 3);
+		k[62][1] = (((t2 ^ tmp2) ^ z[3][59]) ^ 3);
+
+		//Round# 63
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[62][1]<<(n-3))>>>0)|((k[62][0]>>>3))>>>0);
+		tmp2 = (((k[62][0]<<(n-3))>>>0)|((k[62][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[60][0]);
+		t2 = notOperation64(k[60][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[63][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][60]) ^ 3);
+		k[63][1] = (((t2 ^ tmp2) ^ z[3][60]) ^ 3);
+
+		//Round# 64
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[63][1]<<(n-3))>>>0)|((k[63][0]>>>3))>>>0);
+		tmp2 = (((k[63][0]<<(n-3))>>>0)|((k[63][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[61][0]);
+		t2 = notOperation64(k[61][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[64][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][61]) ^ 3);
+		k[64][1] = (((t2 ^ tmp2) ^ z[3][61]) ^ 3);
+
+		//Round# 65
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[64][1]<<(n-3))>>>0)|((k[64][0]>>>3))>>>0);
+		tmp2 = (((k[64][0]<<(n-3))>>>0)|((k[64][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[62][0]);
+		t2 = notOperation64(k[62][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[65][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][0]) ^ 3);
+		k[65][1] = (((t2 ^ tmp2) ^ z[3][0]) ^ 3);
+
+		//Round# 66
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[65][1]<<(n-3))>>>0)|((k[65][0]>>>3))>>>0);
+		tmp2 = (((k[65][0]<<(n-3))>>>0)|((k[65][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[63][0]);
+		t2 = notOperation64(k[63][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[66][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][1]) ^ 3);
+		k[66][1] = (((t2 ^ tmp2) ^ z[3][1]) ^ 3);
+
+		//Round# 67
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[66][1]<<(n-3))>>>0)|((k[66][0]>>>3))>>>0);
+		tmp2 = (((k[66][0]<<(n-3))>>>0)|((k[66][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[64][0]);
+		t2 = notOperation64(k[64][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[67][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][2]) ^ 3);
+		k[67][1] = (((t2 ^ tmp2) ^ z[3][2]) ^ 3);
+
+		//Round# 68
+		//tmp = (ROR3(k[i-1]));
+		tmp1 = (((k[67][1]<<(n-3))>>>0)|((k[67][0]>>>3))>>>0);
+		tmp2 = (((k[67][0]<<(n-3))>>>0)|((k[67][1]>>>3)>>>0));
+
+		tmp3 = (((tmp2<<(n-1))>>>0)|(tmp1>>>1)>>>0);
+		tmp4 = ((tmp1<<(n-1))>>>0)|((tmp2>>>1)>>>0);
+
+		tmp1 = (tmp1^tmp3);
+		tmp2 = (tmp2^tmp4);
+		//tmp = (tmp ^ ROR1(tmp));//modulo operation 0x10000
+
+		//t1 = notOperation64(k[i-m]);
+		t1 = notOperation64(k[65][0]);
+		t2 = notOperation64(k[65][1]);
+
+		//k[i] = (((t1 ^ tmp) ^ z[j][(i-m)]) ^ 3);
+		k[68][0] = t1 ^ tmp1; //(((t1 ^ tmp1) ^ z[3][3]) ^ 3);
+		k[68][1] = (((t2 ^ tmp2) ^ z[3][3]) ^ 3);
+
+
+        return k;
+}
+
+var encrypt64 = function(plaintext, k, ciphertext){
+	var tmp1, tmp2 = 0;
+	var x1 = plaintext[1][0];
+	var x2 = plaintext[1][1];
+	var y1 = plaintext[0][0];
+	var y2 = plaintext[0][1];
+
+	var t11, t12, t21, t22, t31, t32, t41, t42;
+
+
+	//Round# 1
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[0][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[0][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 2
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[1][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[1][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 3
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[2][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[2][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 4
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[3][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[3][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 5
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[4][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[4][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 6
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[5][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[5][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 7
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[6][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[6][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 8
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[7][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[7][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 9
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[8][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[8][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 10
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[9][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[9][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 11
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[10][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[10][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 12
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[11][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[11][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 13
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[12][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[12][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 14
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[13][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[13][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 15
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[14][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[14][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 16
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[15][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[15][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 17
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[16][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[16][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 18
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[17][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[17][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 19
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[18][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[18][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 20
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[19][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[19][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 21
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[20][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[20][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 22
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[21][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[21][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 23
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[22][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[22][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 24
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[23][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[23][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 25
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[24][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[24][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 26
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[25][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[25][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 27
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[26][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[26][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 28
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[27][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[27][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 29
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[28][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[28][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 30
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[29][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[29][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 31
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[30][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[30][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 32
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[31][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[31][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 33
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[32][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[32][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 34
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[33][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[33][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 35
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[34][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[34][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 36
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[35][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[35][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 37
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[36][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[36][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 38
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[37][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[37][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 39
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[38][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[38][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 40
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[39][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[39][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 41
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[40][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[40][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 42
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[41][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[41][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 43
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[42][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[42][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 44
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[43][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[43][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 45
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[44][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[44][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 46
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[45][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[45][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 47
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[46][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[46][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 48
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[47][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[47][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 49
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[48][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[48][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 50
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[49][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[49][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 51
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[50][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[50][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 52
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[51][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[51][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 53
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[52][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[52][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 54
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[53][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[53][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 55
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[54][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[54][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 56
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[55][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[55][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 57
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[56][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[56][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 58
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[57][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[57][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 59
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[58][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[58][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 60
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[59][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[59][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 61
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[60][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[60][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 62
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[61][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[61][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 63
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[62][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[62][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 64
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[63][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[63][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 65
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[64][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[64][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 66
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[65][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[65][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 67
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[66][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[66][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 68
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[67][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[67][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	//Round# 69
+
+	tmp1 =x1;
+	tmp2 =x2;
+	// result of simon encryption per round
+
+	tt1 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[68][0];
+	tt2 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[68][1];
+
+	x1 = tt1;
+	x2 = tt2;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+
+	ciphertext[0][0] = (y1>>>0);
+	ciphertext[0][1] = (y2>>>0);
+	ciphertext[1][0] = (x1>>>0);
+	ciphertext[1][1] = (x2>>>0);
+}
+
+var decrypt64 = function(plaintext, k, ciphertext){
+	var tmp1, tmp2 = 0;
+	var x1 = ciphertext[0][0];
+	var x2 = ciphertext[0][1];
+	var y1 = ciphertext[1][0];
+	var y2 = ciphertext[1][1];
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[68][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[68][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[67][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[67][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[66][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[66][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[65][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[65][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[64][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[64][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[63][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[63][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[62][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[62][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[61][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[61][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[60][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[60][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[59][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[59][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[58][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[58][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[57][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[57][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[56][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[56][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[55][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[55][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[54][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[54][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[53][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[53][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[52][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[52][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[51][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[51][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[50][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[50][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[49][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[49][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[48][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[48][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[47][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[47][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[46][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[46][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[45][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[45][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[44][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[44][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[43][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[43][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[42][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[42][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[41][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[41][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[40][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[40][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[39][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[39][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[38][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[38][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[37][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[37][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[36][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[36][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[35][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[35][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[34][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[34][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[33][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[33][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[32][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[32][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[31][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[31][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[30][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[30][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[29][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[29][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[28][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[28][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[27][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[27][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[26][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[26][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[25][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[25][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[24][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[24][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[23][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[23][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[22][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[22][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[21][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[21][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[20][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[20][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[19][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[19][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[18][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[18][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[17][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[17][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[16][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[16][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[15][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[15][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[14][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[14][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[13][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[13][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[12][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[12][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[11][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[11][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[10][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[10][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[9][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[9][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[8][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[8][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[7][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[7][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[6][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[6][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[5][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[5][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[4][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[4][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[3][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[3][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[2][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[2][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[1][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[1][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+	tmp1 =x1;
+	tmp2 =x2;
+
+	// result of simon encryption per round
+	test11 = y1^(((x2>>>(n-1))|(x1<<1))&((x2>>>(n-8))|(x1<<8)))^((x2>>>(n-2))|(x1<<2))^k[0][0];
+	test12 = y2^(((x1>>>(n-1))|(x2<<1))&((x1>>>(n-8))|(x2<<8)))^((x1>>>(n-2))|(x2<<2))^k[0][1];
+
+	x1 = test11;
+	x2 = test12;
+
+	y1 = tmp1;
+	y2 = tmp2;
+
+
+	plaintext[0][0] = (x1>>>0);
+	plaintext[0][1] = (x2>>>0);
+	plaintext[1][0] = (y1>>>0);
+	plaintext[1][1] = (y2>>>0);
+}
+
+
+
+
+var simon = function(){
+	//simon128/128
+        var key = new Array(69);
+        for(var i=0; i<69; i++){
+            key[i] = new Array(2);
+            key[i][0] = 0x0;
+            key[i][1] = 0x0;
+        }
+
+        key[0][0] = 0x07060504;
+        key[0][1] = 0x03020100;
+        key[1][0] = 0x0f0e0d0c;
+        key[1][1] = 0x0b0a0908;
+		key[2][0] = 0x17161514;
+        key[2][1] = 0x13121110;
+
+
+        var plaintext = new Array(2);
+        for(var i=0; i<2; i++){
+            plaintext[i] = new Array(2);
+        }
+        plaintext[0][0] = 0x65687720;
+        plaintext[0][1] = 0x65626972;
+        plaintext[1][0] = 0x20657265;
+        plaintext[1][1] = 0x6874206e;
+		
+        for(var i=0; i<2; i++){
+            console.log("plaintext["+i+"][0]: 0x"+plaintext[i][0].toString(16)+"\n");
+            console.log("plaintext["+i+"][1]: 0x"+plaintext[i][1].toString(16)+"\n");
+        }
+		
+
+		var plaintext2 = new Array(2);
+        for(var i=0; i<2; i++){
+            plaintext2[i] = new Array(2);
+			plaintext2[i][0] = 0x0;
+            plaintext2[i][1] = 0x0;
+        }
+
+        var ciphertext = new Array(2);
+        for(var i=0; i<2; i++){
+            ciphertext[i] = new Array(2);
+            ciphertext[i][0] = 0x0;
+            ciphertext[i][1] = 0x0;
+        }
+
+        key = keyexpansion64(key);
+		/*
+		for(var i=0; i<68; i++){
+			console.log(i);
+			console.log("key["+i+"][0]: "+key[i][0].toString(16));
+			console.log("key["+i+"][1]: "+key[i][1].toString(16));
+		}
+		*/	
+
+		encrypt64(plaintext, key, ciphertext);
+
+		console.log("Ciphertext");
+		for(var i=0; i<2; i++){
+            console.log("ciphertext["+i+"][0]: 0x"+ciphertext[i][0].toString(16));
+			console.log("ciphertext["+i+"][0]: "+ciphertext[i][0]);
+            console.log("ciphertext["+i+"][1]: 0x"+ciphertext[i][1].toString(16));
+			console.log("ciphertext["+i+"][1]: "+ciphertext[i][1]+"\n");
+        }
+
+		decrypt64(plaintext2, key, ciphertext);
+
+		console.log("Plaintext");
+		for(var i=0; i<2; i++){
+            console.log("plaintext2["+i+"][0]: 0x"+plaintext2[i][0].toString(16));
+			console.log("plaintext2["+i+"][0]: "+plaintext2[i][0]);
+            console.log("plaintext2["+i+"][1]: 0x"+plaintext2[i][1].toString(16));
+			console.log("plaintext2["+i+"][1]: "+plaintext2[i][1]+"\n");
+        }
+
+
+		//Time Calculation
+
+		console.log("\nSimon 128/192\n");
+		document.write('Simon 128/192' + '<br />');
+
+		var Hz2 = 2.30*1073741824; //3.40*1073741824;
+		var Bytes = 16;
+		var Bytes2 = 24;
+
+		var size_test=1000;
+		var cnt_time;
+		var key_cpb = 0.0;
+		var enc_cpb = 0.0;
+		var dec_cpb = 0.0;
+		var idx = 0;
+
+		while(idx<10){
+			var d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					keyexpansion64(key);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			var ms = (n2-n)/size_test;
+			var s = ms*0.001;
+		var cpb = (Hz2*s)/Bytes2;
+		if(cpb>0){
+			key_cpb += cpb;
+			idx++;
+			}
+		}
+		idx = 0;
+		key_cpb /= 10;
+		console.log("keyexpansion time: "+ms+"ms");
+		console.log("keyexpansion time: "+s+"s");
+		console.log("cpb: "+ key_cpb);
+
+		document.write('keyexpansion time: ',ms+'ms'+ '<br />');
+		document.write('keyexpansion time: ',s+'s'+ '<br />');
+		document.write('cpb: ',key_cpb+ '<br />');
+
+
+		while(idx<10){
+			d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					encrypt64(plaintext, key, ciphertext);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			ms = (n2-n)/size_test;
+			s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes;
+			if(cpb>0){
+				enc_cpb += cpb;
+				idx++;
+			}
+		}
+		enc_cpb /= 10;
+		idx = 0;
+		console.log("encryption time: "+ms+"ms");
+		console.log("encryption time: "+s+"s");
+		console.log("cpb: "+ enc_cpb);
+
+		document.write('encryption time: ',ms+'ms'+ '<br />');
+		document.write('encryption time: ',s+'s'+ '<br />');
+		document.write('cpb: ',enc_cpb+ '<br />');
+
+
+		while(idx<10){
+			d = new Date();
+			var n = d.getUTCMilliseconds();
+			for(cnt_time=0;cnt_time<size_test;cnt_time++){
+					decrypt64(plaintext2, key, ciphertext);
+			}
+			d = new Date();
+			var n2 = d.getUTCMilliseconds();
+			ms = (n2-n)/size_test;
+			s = ms*0.001;
+			var cpb = (Hz2*s)/Bytes;
+			if(cpb>0){
+				dec_cpb += cpb;
+				idx++;
+			}
+		}
+		dec_cpb /= 10;
+		idx = 0;
+		console.log("decryption time: "+(n2-n)/size_test+"ms");
+		console.log("decryption time: "+s+"s");
+		console.log("cpb: "+ dec_cpb);
+       
+	   document.write('decryption time: ',ms+'ms'+ '<br />');
+	   document.write('decryption time: ',s+'s'+ '<br />');
+	   document.write('cpb: ',dec_cpb+ '<br />');
+
+}
+
+
+    //-->
+</script>
+<p>Click the following to see the result:</p> <form> <input type="button" value="Click Me" onclick="simon();" /> </form>
+</body>
+</html>
